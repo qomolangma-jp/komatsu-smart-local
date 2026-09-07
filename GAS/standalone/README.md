@@ -33,7 +33,7 @@ Set these before deployment:
 - SS_NOTICE_ID
 - SS_ATTENDANCE_ID
 - SS_CHAT_ID (optional, defaults to SS_BOOKROOM_ID)
-- SHEET_MEMBER_MAIN (default: 名簿)
+- SHEET_MEMBER_MAIN (default: users)
 - SHEET_BOOKROOM_MAIN (default: 予約台帳)
 - SHEET_CHAT_LOG (default: chat)
 - SHEET_WEBHOOK_LOG (default: webhook_log)
@@ -57,7 +57,7 @@ Optional properties for multicast push:
 - PUSH_INCLUDE_ROLES (comma-separated, optional)
 - PUSH_EXCLUDE_STATUSES (default: ng,suspended,blocked,inactive)
 - PUSH_NOTIFICATION_DISABLED (default: false)
-- DIALOG_TARGET_SHEET (default: 名簿)
+- DIALOG_TARGET_SHEET (default: users)
 - HISTORY_SS_ID (optional, fallback: SS_MEMBER_ID)
 - HISTORY_SHEET_NAME (default: line_send_history)
 

@@ -38,7 +38,7 @@ var APP_CONFIG = (function buildConfig() {
       attendance: get("SS_ATTENDANCE_ID", "")
     },
     sheets: {
-      memberMain: get("SHEET_MEMBER_MAIN", "名簿"),
+      memberMain: get("SHEET_MEMBER_MAIN", "users"),
       bookroomMain: get("SHEET_BOOKROOM_MAIN", "予約台帳"),
       chatLog: get("SHEET_CHAT_LOG", "chat"),
       webhookLog: get("SHEET_WEBHOOK_LOG", "webhook_log"),
@@ -60,7 +60,7 @@ var APP_CONFIG = (function buildConfig() {
     push: {
       historySpreadsheetId: get("HISTORY_SS_ID", ""),
       historySheetName: get("HISTORY_SHEET_NAME", "line_send_history"),
-      dialogTargetSheet: get("DIALOG_TARGET_SHEET", "名簿")
+      dialogTargetSheet: get("DIALOG_TARGET_SHEET", "users")
     }
   };
 })();
