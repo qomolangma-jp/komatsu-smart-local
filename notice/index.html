@@ -1,0 +1,979 @@
+<!DOCTYPE html>
+<html lang="ja" class="h-full bg-slate-100">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+	<title>DX町内会 デジタル回覧板</title>
+	<script src="https://cdn.tailwindcss.com"></script>
+	<link rel="stylesheet" href="../common/app-shell.css">
+	<script src="../common/app-config.js"></script>
+	<script src="../common/member-check.js"></script>
+	<script src="../common/ui-patterns.js"></script>
+	<script>
+		tailwind.config = {
+			theme: {
+				extend: {
+					colors: {
+						brand: {
+							50: '#f0fdf4',
+							100: '#dcfce7',
+							200: '#bbf7d0',
+							500: '#22c55e',
+							600: '#16a34a',
+							700: '#15803d'
+						}
+					}
+				}
+			}
+		};
+	</script>
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+	<script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+	<script src="../common/ui-helpers.js"></script>
+</head>
+<body class="h-full app-page overflow-x-hidden">
+	<main class="app-shell app-shell--desktop">
+		<header class="app-header">
+			<div class="app-header__tabbar">
+				<button
+					id="tabBtnCurrent"
+					type="button"
+					class="app-header__tab is-active"
+				>
+					<i class="fa-solid fa-newspaper"></i>
+					<span>今月の回覧・配布物</span>
+				</button>
+				<button
+					id="tabBtnArchive"
+					type="button"
+					class="app-header__tab"
+				>
+					<i class="fa-solid fa-book-open"></i>
+					<span>バックナンバー</span>
+				</button>
+			</div>
+			<div id="devPanel" class="hidden mt-3 rounded-xl bg-slate-700/80 border border-slate-600 p-2">
+				<p class="text-[11px] text-slate-200 mb-2">開発者パネル (状態テスト)</p>
+				<div class="flex flex-wrap gap-2">
+					<button type="button" data-dev-state="ok" class="px-3 py-1.5 text-xs rounded-lg bg-emerald-500 text-white font-semibold">正常(OK)</button>
+					<button type="button" data-dev-state="not_registered" class="px-3 py-1.5 text-xs rounded-lg bg-amber-500 text-white font-semibold">未登録</button>
+					<button type="button" data-dev-state="suspended" class="px-3 py-1.5 text-xs rounded-lg bg-rose-500 text-white font-semibold">利用制限</button>
+				</div>
+			</div>
+		</header>
+
+		<section class="app-toolbar">
+			<div class="app-toolbar__inner">
+				<h1 class="app-toolbar__title">
+					<i class="fa-solid fa-newspaper"></i>
+					<span>DX町内会 デジタル回覧板</span>
+				</h1>
+				<span id="devBadge" class="app-badge hidden">LOCAL MODE</span>
+			</div>
+		</section>
+
+		<section id="loading" class="app-screen app-screen--centered">
+			<div class="app-loading">
+				<div class="app-loading__spinner"></div>
+				<p id="loadingMessage" class="text-sm font-semibold text-slate-600">住民名簿と照合中...</p>
+			</div>
+		</section>
+
+		<section id="notRegisteredScreen" class="hidden app-screen app-screen--centered">
+			<div class="app-status-card">
+				<div class="app-status-card__icon text-amber-500">
+					<i class="fa-regular fa-face-frown-open"></i>
+				</div>
+				<h2 class="app-status-card__title">名簿への登録が必要です</h2>
+				<p class="app-status-card__text">町内会のデジタル回覧板を利用するには、事前の住民登録が必要です。</p>
+				<a
+					id="registerLink"
+					href="#"
+					target="_blank"
+					rel="noopener noreferrer"
+					class="app-cta app-cta--warning mt-4"
+				>
+					<i class="fa-solid fa-up-right-from-square"></i>
+					<span>登録フォームを開く</span>
+				</a>
+			</div>
+		</section>
+
+		<section id="suspendedScreen" class="hidden app-screen app-screen--centered">
+			<div class="app-status-card app-status-card--danger">
+				<div class="app-status-card__icon text-rose-500">
+					<i class="fa-solid fa-triangle-exclamation"></i>
+				</div>
+				<h2 class="app-status-card__title">現在ご利用できません</h2>
+				<p class="app-status-card__text">利用制限が設定されています。詳細は町内会管理者へお問い合わせください。</p>
+			</div>
+		</section>
+
+		<section id="app" class="hidden app-screen">
+			<div class="app-section">
+				<article class="app-card app-card--soft">
+					<div class="app-user-row">
+						<img id="userAvatar" src="https://placehold.jp/96x96.png" alt="ユーザーアバター" class="app-user-row__avatar">
+						<div>
+							<p class="app-user-row__label">ログイン中の町民</p>
+							<p class="app-user-row__name"><span id="userName">-</span> 様</p>
+						</div>
+					</div>
+				</article>
+
+				<div id="canvasCurrent" class="space-y-4">
+					<article class="rounded-2xl border border-brand-100 bg-brand-50 p-3">
+						<p class="text-xs text-slate-600">対象号</p>
+						<p id="currentMonthLabel" class="text-lg font-bold text-brand-700 mt-1">-</p>
+					</article>
+
+					<section id="noticeSection" class="space-y-2">
+						<h3 class="text-sm font-bold text-slate-800 flex items-center gap-2">
+							<span class="text-base">📌</span> 回覧板
+						</h3>
+						<div id="noticeList" class="space-y-2"></div>
+					</section>
+
+					<section id="distributionSection" class="space-y-2">
+						<h3 class="text-sm font-bold text-slate-800 flex items-center gap-2">
+							<span class="text-base">📄</span> 配布物
+						</h3>
+						<div id="distributionList" class="space-y-2"></div>
+					</section>
+				</div>
+
+				<div id="canvasArchive" class="hidden space-y-4">
+					<article class="rounded-2xl border border-slate-200 bg-white p-3">
+						<label for="archiveMonthSelect" class="block text-xs text-slate-600 mb-2">対象年月を選択</label>
+						<select id="archiveMonthSelect" class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500"></select>
+					</article>
+
+					<article class="rounded-2xl border border-slate-200 bg-slate-50 p-3">
+						<p class="text-xs text-slate-600">閲覧中のバックナンバー</p>
+						<p id="archiveMonthLabel" class="text-lg font-bold text-slate-800 mt-1">-</p>
+					</article>
+
+					<section class="space-y-2">
+						<h3 class="text-sm font-bold text-slate-800 flex items-center gap-2">
+							<span class="text-base">📚</span> 一覧
+						</h3>
+						<div id="archiveList" class="space-y-2"></div>
+					</section>
+				</div>
+
+				<div class="pt-2">
+					<button
+						id="goArchiveBottomBtn"
+						type="button"
+						class="w-full inline-flex items-center justify-center gap-2 rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm font-bold text-slate-700 shadow-sm hover:bg-slate-50"
+					>
+						<i class="fa-solid fa-book-open"></i>
+						<span>バックナンバーを見る</span>
+					</button>
+				</div>
+			</div>
+		</section>
+
+		<div id="toast" class="pointer-events-none fixed left-1/2 -translate-x-1/2 bottom-4 w-[calc(100%-2rem)] max-w-[440px] hidden">
+			<div id="toastInner" class="rounded-xl px-4 py-3 text-sm font-semibold shadow-xl"></div>
+		</div>
+	</main>
+
+	<script>
+		const PAGE_CONFIG = (window.AppConfig && window.AppConfig.getPageConfig('notice')) || {};
+		const LIFF_ID = PAGE_CONFIG.liffId || '2008893549-d75d72lX';
+		const GAS_URL = PAGE_CONFIG.gasUrl || '';
+		if (!GAS_URL) {
+			throw new Error('AppConfig gasUrl is not configured for notice page');
+		}
+		const REGISTER_FORM_URL = PAGE_CONFIG.registerFormUrl || 'https://liff.line.me/2008893549-jeCNKx4Y';
+		const LOCAL_MEMBER_STATUS_KEY = 'kitaasai_notice_local_test_member_status';
+		const MEMBER_CACHE_TTL_MS = 60 * 1000;
+		const MONTHLY_CACHE_TTL_MS = 3 * 60 * 1000;
+		const memberProfileMemoryCache = new Map();
+		const monthlyItemsMemoryCache = new Map();
+
+		const state = {
+			isLocalMode: false,
+			activeTab: 'current',
+			profile: null,
+			member: null,
+			currentItems: [],
+			archiveItems: [],
+			archiveLoaded: false,
+			archiveLoading: false
+		};
+
+		const el = {
+			tabBtnCurrent: document.getElementById('tabBtnCurrent'),
+			tabBtnArchive: document.getElementById('tabBtnArchive'),
+			devPanel: document.getElementById('devPanel'),
+			devBadge: document.getElementById('devBadge'),
+			loading: document.getElementById('loading'),
+			loadingMessage: document.getElementById('loadingMessage'),
+			notRegisteredScreen: document.getElementById('notRegisteredScreen'),
+			suspendedScreen: document.getElementById('suspendedScreen'),
+			app: document.getElementById('app'),
+			userAvatar: document.getElementById('userAvatar'),
+			userName: document.getElementById('userName'),
+			currentMonthLabel: document.getElementById('currentMonthLabel'),
+			noticeList: document.getElementById('noticeList'),
+			distributionList: document.getElementById('distributionList'),
+			canvasCurrent: document.getElementById('canvasCurrent'),
+			canvasArchive: document.getElementById('canvasArchive'),
+			archiveMonthSelect: document.getElementById('archiveMonthSelect'),
+			archiveMonthLabel: document.getElementById('archiveMonthLabel'),
+			archiveList: document.getElementById('archiveList'),
+			goArchiveBottomBtn: document.getElementById('goArchiveBottomBtn'),
+			toast: document.getElementById('toast'),
+			toastInner: document.getElementById('toastInner'),
+			registerLink: document.getElementById('registerLink')
+		};
+
+		function isLocalRuntime() {
+			return window.location.hostname === 'localhost'
+				|| window.location.hostname === '127.0.0.1'
+				|| window.location.protocol === 'file:';
+		}
+
+		function getLocalTestStatus() {
+			const raw = localStorage.getItem(LOCAL_MEMBER_STATUS_KEY) || 'ok';
+			if (raw === 'unregistered') return 'not_registered';
+			if (raw === 'ng') return 'suspended';
+			return raw;
+		}
+
+		function setLocalTestStatus(status) {
+			const normalized = status === 'unregistered' ? 'not_registered' : status === 'ng' ? 'suspended' : status;
+			localStorage.setItem(LOCAL_MEMBER_STATUS_KEY, normalized);
+		}
+
+		function formatYmToJa(ym) {
+			if (!ym || !/^\d{4}-\d{2}$/.test(ym)) return '-';
+			const [y, m] = ym.split('-');
+			return `${Number(y)}年${Number(m)}月号`;
+		}
+
+		function getCurrentYm() {
+			const now = new Date();
+			return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+		}
+
+		function buildRecentMonths(count = 12) {
+			const months = [];
+			const base = new Date();
+			base.setDate(1);
+			for (let i = 0; i < count; i++) {
+				const d = new Date(base.getFullYear(), base.getMonth() - i, 1);
+				const ym = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+				months.push(ym);
+			}
+			return months;
+		}
+
+		function switchMainState(next) {
+			AppUi.setScreenState({
+				loading: el.loading,
+				notRegistered: el.notRegisteredScreen,
+				suspended: el.suspendedScreen,
+				app: el.app
+			}, next);
+		}
+
+		function updateTabs() {
+			const isCurrent = state.activeTab === 'current';
+			el.canvasCurrent.classList.toggle('hidden', !isCurrent);
+			el.canvasArchive.classList.toggle('hidden', isCurrent);
+			el.goArchiveBottomBtn.classList.toggle('hidden', !isCurrent);
+
+			el.tabBtnCurrent.className = isCurrent
+				? 'app-header__tab is-active'
+				: 'app-header__tab';
+
+			el.tabBtnArchive.className = !isCurrent
+				? 'app-header__tab is-active'
+				: 'app-header__tab';
+		}
+
+		function showToast(message, type = 'info') {
+			AppUi.showToast({
+				toast: el.toast,
+				toastInner: el.toastInner,
+				message,
+				type,
+				duration: 2600
+			});
+		}
+
+		function setLoadingMessage(message) {
+			if (!el.loadingMessage) return;
+			el.loadingMessage.textContent = message;
+		}
+
+		function getMonthlyCacheKey(ym, userId) {
+			return `kitaasai_notice_monthly_${userId || 'anonymous'}_${ym}`;
+		}
+
+		function getMemberCacheKey(userId) {
+			return `kitaasai_notice_member_${userId || 'anonymous'}`;
+		}
+
+		function readMemberProfileCache(userId) {
+			const key = getMemberCacheKey(userId);
+			const memoryCached = memberProfileMemoryCache.get(key);
+			if (memoryCached && (Date.now() - memoryCached.ts) < MEMBER_CACHE_TTL_MS) {
+				return memoryCached.member;
+			}
+
+			try {
+				const raw = sessionStorage.getItem(key);
+				if (!raw) return null;
+				const parsed = JSON.parse(raw);
+				if (!parsed || !parsed.member || !parsed.ts) return null;
+				if ((Date.now() - parsed.ts) >= MEMBER_CACHE_TTL_MS) return null;
+				memberProfileMemoryCache.set(key, parsed);
+				return parsed.member;
+			} catch (_) {
+				return null;
+			}
+		}
+
+		function writeMemberProfileCache(userId, member) {
+			const key = getMemberCacheKey(userId);
+			const payload = { ts: Date.now(), member };
+			memberProfileMemoryCache.set(key, payload);
+
+			try {
+				sessionStorage.setItem(key, JSON.stringify(payload));
+			} catch (_) {
+				// Storage full or blocked: ignore cache writes.
+			}
+		}
+
+		function readMonthlyItemsCache(ym, userId) {
+			const key = getMonthlyCacheKey(ym, userId);
+			const memoryCached = monthlyItemsMemoryCache.get(key);
+			if (memoryCached && (Date.now() - memoryCached.ts) < MONTHLY_CACHE_TTL_MS) {
+				return memoryCached.items;
+			}
+
+			try {
+				const raw = sessionStorage.getItem(key);
+				if (!raw) return null;
+				const parsed = JSON.parse(raw);
+				if (!parsed || !Array.isArray(parsed.items) || !parsed.ts) return null;
+				if ((Date.now() - parsed.ts) >= MONTHLY_CACHE_TTL_MS) return null;
+				monthlyItemsMemoryCache.set(key, parsed);
+				return parsed.items;
+			} catch (_) {
+				return null;
+			}
+		}
+
+		function writeMonthlyItemsCache(ym, userId, items) {
+			const key = getMonthlyCacheKey(ym, userId);
+			const payload = { ts: Date.now(), items };
+			monthlyItemsMemoryCache.set(key, payload);
+
+			try {
+				sessionStorage.setItem(key, JSON.stringify(payload));
+			} catch (_) {
+				// Storage full or blocked: ignore cache writes.
+			}
+		}
+
+		async function gasGet(params = {}) {
+			const url = new URL(GAS_URL);
+			Object.entries(params).forEach(([k, v]) => {
+				if (v !== undefined && v !== null) url.searchParams.set(k, v);
+			});
+			const res = await fetch(url.toString(), {
+				method: 'GET',
+				credentials: 'omit'
+			});
+			if (!res.ok) throw new Error(`GET failed: ${res.status}`);
+			return res.json();
+		}
+
+		async function gasPost(payload = {}) {
+			const res = await fetch(GAS_URL, {
+				method: 'POST',
+				headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+				body: JSON.stringify(payload),
+				keepalive: true
+			});
+			if (!res.ok) throw new Error(`POST failed: ${res.status}`);
+			return res.json().catch(() => ({}));
+		}
+
+		function normalizeYmd(value) {
+			const s = String(value || '').trim();
+			const m = s.match(/(\d{4})[\/-](\d{1,2})[\/-](\d{1,2})/);
+			if (!m) return s;
+			return `${m[1]}/${m[2].padStart(2, '0')}/${m[3].padStart(2, '0')}`;
+		}
+
+		function toMonthlyItem(item) {
+			if (Array.isArray(item)) {
+				return {
+					ymd: normalizeYmd(item[0] || ''),
+					type: String(item[1] || '').trim().toLowerCase(),
+					label: String(item[2] || '無題').trim(),
+					url: String(item[3] || '#').trim(),
+					memo: String(item[4] || '').trim()
+				};
+			}
+
+			const row = item && typeof item === 'object' ? item : {};
+			const typeRaw = row.type || row.item_type || row.kind || row.category || '';
+			return {
+				ymd: normalizeYmd(row.ymd || row.date || row.publish_date || ''),
+				type: String(typeRaw).trim().toLowerCase(),
+				label: String(row.label || row.title || row.name || '無題').trim(),
+				url: String(row.url || row.link || '#').trim(),
+				memo: String(row.memo || row.note || row.description || '').trim()
+			};
+		}
+
+		function parseMonthlyItemsFromText(text) {
+			if (!text) return [];
+			const htmlCommentPattern = new RegExp('<!--([\\s\\S]*?)-->', 'g');
+			const markdownLinkPattern = new RegExp('\\[[^\\]]*\\]\\((https?:[^)]+)\\)', 'g');
+
+			const cleaned = String(text)
+				.replace(htmlCommentPattern, ' ')
+				.replace(markdownLinkPattern, ' $1 ')
+				.replace(/\s+/g, ' ')
+				.trim();
+
+			const rows = [];
+			const rowPattern = /(\d{4}[\/-]\d{1,2}[\/-]\d{1,2})\s*(回覧板|配布物)\s*([\s\S]*?)\s*(https?:\/\/[^\s]+)\s*([\s\S]*?)(?=(\d{4}[\/-]\d{1,2}[\/-]\d{1,2})\s*(回覧板|配布物)|$)/g;
+
+			let match;
+			while ((match = rowPattern.exec(cleaned)) !== null) {
+				rows.push({
+					ymd: normalizeYmd(match[1]),
+					type: String(match[2]).trim().toLowerCase(),
+					label: String(match[3] || '').trim() || '無題',
+					url: String(match[4] || '').trim() || '#',
+					memo: String(match[5] || '').trim()
+				});
+			}
+
+			return rows;
+		}
+
+		function extractMonthlyItemRows(payload) {
+			if (!payload) return [];
+
+			if (Array.isArray(payload)) {
+				return payload;
+			}
+
+			if (typeof payload === 'string') {
+				return parseMonthlyItemsFromText(payload);
+			}
+
+			if (typeof payload === 'object') {
+				const candidateKeys = ['items', 'list', 'rows', 'values', 'result', 'data'];
+				for (const key of candidateKeys) {
+					const value = payload[key];
+					if (Array.isArray(value)) return value;
+					if (typeof value === 'string') {
+						const parsed = parseMonthlyItemsFromText(value);
+						if (parsed.length > 0) return parsed;
+					}
+				}
+
+				const values = Object.values(payload);
+				for (const value of values) {
+					if (Array.isArray(value)) return value;
+					if (typeof value === 'string') {
+						const parsed = parseMonthlyItemsFromText(value);
+						if (parsed.length > 0) return parsed;
+					}
+				}
+			}
+
+			return [];
+		}
+
+		function normalizeMemberPayload(raw, profile = {}) {
+			const data = raw && raw.data ? raw.data : raw;
+			const normalized = MemberCheck.normalizeMemberCheckResponse(raw);
+			const status = normalized.status || MemberCheck.normalizeMemberStatus(data && data.status);
+
+			return {
+				isRegistered: normalized.isRegistered !== undefined ? normalized.isRegistered : status !== 'not_registered',
+				status,
+				memberName: normalized.fullName || (data && (data.member_name || data.display_name)) || profile.displayName || '町民',
+				group: normalized.group || (data && (data.group || data.group_name)) || '',
+				registerFormUrl: normalized.registerFormUrl || (data && data.register_form_url) || REGISTER_FORM_URL
+			};
+		}
+
+		async function fetchMemberProfile() {
+			if (state.isLocalMode) {
+				const testStatus = getLocalTestStatus();
+				if (testStatus === 'not_registered') {
+					return {
+						isRegistered: false,
+						status: 'not_registered',
+						memberName: '未登録ユーザー',
+						registerFormUrl: REGISTER_FORM_URL
+					};
+				}
+				if (testStatus === 'suspended') {
+					return {
+						isRegistered: true,
+						status: 'suspended',
+						memberName: '利用制限ユーザー',
+						registerFormUrl: REGISTER_FORM_URL
+					};
+				}
+				return {
+					isRegistered: true,
+					status: 'ok',
+					memberName: 'DX町内会 テスト住民',
+					registerFormUrl: REGISTER_FORM_URL
+				};
+			}
+
+			const profile = state.profile || {};
+			const userId = profile.userId || '';
+			const cached = readMemberProfileCache(userId);
+			if (cached) return cached;
+
+			const raw = await gasGet({
+				action: 'member_check',
+				user_id: userId,
+				display_name: profile.displayName || '',
+				picture_url: profile.pictureUrl || ''
+			});
+			const member = normalizeMemberPayload(raw, profile);
+			writeMemberProfileCache(userId, member);
+			return member;
+		}
+
+		async function fetchNoticeBootstrap(ym) {
+			const profile = state.profile || {};
+			const raw = await gasGet({
+				action: 'notice_bootstrap',
+				ym,
+				user_id: profile.userId || '',
+				display_name: profile.displayName || '',
+				picture_url: profile.pictureUrl || ''
+			});
+
+			const data = raw && raw.data ? raw.data : raw;
+			const member = normalizeMemberPayload(data && data.member ? data.member : raw, profile);
+			const rows = extractMonthlyItemRows(data && data.items ? data.items : data);
+			const items = rows
+				.map((item) => toMonthlyItem(item))
+				.filter((item) => item.label || item.url !== '#');
+
+			writeMemberProfileCache(profile.userId || '', member);
+			writeMonthlyItemsCache(ym, profile.userId || '', items);
+
+			return {
+				member,
+				items
+			};
+		}
+
+		async function fetchMonthlyItems(ym) {
+			const userId = state.profile?.userId || '';
+			const cached = readMonthlyItemsCache(ym, userId);
+			if (cached) return cached;
+
+			const raw = await gasGet({
+				action: 'get_monthly_items',
+				ym,
+				user_id: userId
+			});
+			const data = raw && raw.data ? raw.data : raw;
+			const rows = extractMonthlyItemRows(data);
+			const normalized = rows
+				.map((item) => toMonthlyItem(item))
+				.filter((item) => item.label || item.url !== '#');
+
+			writeMonthlyItemsCache(ym, userId, normalized);
+
+			if (normalized.length === 0 && state.isLocalMode) {
+				console.warn('月次データが0件でした。返却形式を確認してください。', raw);
+			}
+
+			return normalized;
+		}
+
+		function classifyItem(type) {
+			if (type.includes('notice') || type.includes('回覧')) return 'notice';
+			if (type.includes('distribution') || type.includes('配布')) return 'distribution';
+			return 'distribution';
+		}
+
+		function openItemUrl(url, label) {
+			if (!url || url === '#') {
+				showToast('リンク先が設定されていません', 'warning');
+				return;
+			}
+
+			const targetMonth = getCurrentYm();
+			logAction({ action_type: 'item_click', item_label: label, url, target_month: targetMonth });
+			logAction({ action_type: 'item_redirect', item_label: label, url, target_month: targetMonth });
+
+			if (window.liff && liff.isInClient()) {
+				liff.openWindow({ url, external: true });
+			} else {
+				window.open(url, '_blank', 'noopener,noreferrer');
+			}
+		}
+
+		function renderEmpty(container, message) {
+			container.innerHTML = `
+				<article class="rounded-2xl border border-dashed border-slate-300 bg-white p-4 text-center text-sm text-slate-500">
+					${message}
+				</article>
+			`;
+		}
+
+		function createItemCard(item, mode = 'default') {
+			const itemCategory = classifyItem(item.type);
+			const typeLabel = itemCategory === 'notice' ? '回覧板' : '配布物';
+			const typeBadgeClass = itemCategory === 'notice'
+				? 'bg-sky-100 text-sky-700 border-sky-200'
+				: 'bg-amber-100 text-amber-700 border-amber-200';
+			const typeBadge = `
+				<span class="inline-flex items-center rounded-full border px-2 py-0.5 text-[11px] font-bold ${typeBadgeClass}">
+					${typeLabel}
+				</span>
+			`;
+			const memoBlock = item.memo
+				? `<p class="text-xs text-slate-600 mt-2">${escapeHtml(item.memo)}</p>`
+				: '';
+			const buttonLabel = mode === 'archive' ? '開く' : (itemCategory === 'notice' ? '確認する' : '配布物を開く');
+
+			return `
+				<article class="rounded-2xl border border-slate-200 bg-white p-3 shadow-sm">
+					<div class="flex items-start justify-between gap-2">
+						<div class="min-w-0">
+							<div class="flex items-center gap-2 flex-wrap">
+								<p class="text-[11px] text-slate-500">${escapeHtml(item.ymd || '-')}</p>
+								${typeBadge}
+							</div>
+							<h4 class="text-sm font-bold text-slate-800 mt-1 break-words">${escapeHtml(item.label)}</h4>
+							${memoBlock}
+						</div>
+						<button
+							type="button"
+							class="shrink-0 inline-flex items-center gap-1 rounded-lg bg-brand-600 hover:bg-brand-700 text-white text-xs font-bold px-3 py-2"
+							data-item-url="${escapeHtml(item.url)}"
+							data-item-label="${escapeHtml(item.label)}"
+						>
+							<i class="fa-solid fa-up-right-from-square"></i>${buttonLabel}
+						</button>
+					</div>
+				</article>
+			`;
+		}
+
+		function renderCurrentItems(items, ym) {
+			const notices = items.filter((item) => classifyItem(item.type) === 'notice');
+			const distributions = items.filter((item) => classifyItem(item.type) === 'distribution');
+
+			el.currentMonthLabel.textContent = formatYmToJa(ym);
+			if (notices.length === 0) {
+				renderEmpty(el.noticeList, '今月の回覧板はありません');
+			} else {
+				el.noticeList.innerHTML = notices.map((item) => createItemCard(item)).join('');
+			}
+
+			if (distributions.length === 0) {
+				renderEmpty(el.distributionList, '今月の配布物はありません');
+			} else {
+				el.distributionList.innerHTML = distributions.map((item) => createItemCard(item)).join('');
+			}
+		}
+
+		function renderArchiveItems(items, ym) {
+			el.archiveMonthLabel.textContent = formatYmToJa(ym);
+			if (items.length === 0) {
+				renderEmpty(el.archiveList, '選択した月のデータはありません');
+				return;
+			}
+			el.archiveList.innerHTML = items.map((item) => createItemCard(item, 'archive')).join('');
+		}
+
+		async function loadArchiveForMonth(ym, options = {}) {
+			const { showInlineLoading = true } = options;
+			if (state.archiveLoading) return;
+			state.archiveLoading = true;
+
+			try {
+				if (showInlineLoading) {
+					el.archiveList.innerHTML = '<div class="text-sm text-slate-500 px-1">読み込み中...</div>';
+				}
+				const items = await fetchMonthlyItems(ym);
+				state.archiveItems = items;
+				renderArchiveItems(items, ym);
+				state.archiveLoaded = true;
+				logAction({ action_type: 'page_view', ym });
+			} finally {
+				state.archiveLoading = false;
+			}
+		}
+
+		async function ensureArchiveLoaded() {
+			if (state.archiveLoaded) return;
+			const ym = el.archiveMonthSelect.value || getCurrentYm();
+			try {
+				await loadArchiveForMonth(ym, { showInlineLoading: true });
+			} catch (error) {
+				renderEmpty(el.archiveList, 'データの取得に失敗しました');
+				showToast('バックナンバー取得に失敗しました', 'error');
+			}
+		}
+
+		function prefetchArchiveSilently() {
+			if (state.archiveLoaded || state.archiveLoading) return;
+			const ym = el.archiveMonthSelect.value || getCurrentYm();
+			const runner = async () => {
+				try {
+					await loadArchiveForMonth(ym, { showInlineLoading: false });
+				} catch (_) {
+					// Silent prefetch should not disturb the UI.
+				}
+			};
+
+			if (typeof window.requestIdleCallback === 'function') {
+				window.requestIdleCallback(() => { runner(); }, { timeout: 1200 });
+				return;
+			}
+
+			setTimeout(() => { runner(); }, 400);
+		}
+
+		function bindCardClickEvents() {
+			const root = document.getElementById('app');
+			root.addEventListener('click', (event) => {
+				const button = event.target.closest('button[data-item-url]');
+				if (!button) return;
+				const url = button.dataset.itemUrl || '#';
+				const label = button.dataset.itemLabel || '無題';
+				openItemUrl(url, label);
+			});
+		}
+
+		function escapeHtml(value) {
+			return String(value)
+				.replace(/&/g, '&amp;')
+				.replace(/</g, '&lt;')
+				.replace(/>/g, '&gt;')
+				.replace(/"/g, '&quot;')
+				.replace(/'/g, '&#039;');
+		}
+
+		function logAction(payload) {
+			if (state.isLocalMode) {
+				console.log('[LOCAL LOG]', payload.action_type, payload.item_label || '', payload.target_month || payload.ym || getCurrentYm());
+				return;
+			}
+
+			const targetMonth = payload.target_month || payload.ym || getCurrentYm();
+			const body = {
+				action: 'log',
+				action_type: payload.action_type,
+				item_label: payload.item_label || '',
+				target_month: targetMonth,
+				ym: targetMonth,
+				url: payload.url || '',
+				user_id: state.profile?.userId || '',
+				user_name: state.member?.memberName || state.profile?.displayName || '',
+				group: state.member?.group || '',
+				meta: payload.meta || {}
+			};
+
+			if (navigator.sendBeacon) {
+				try {
+					const blob = new Blob([JSON.stringify(body)], { type: 'text/plain;charset=utf-8' });
+					navigator.sendBeacon(GAS_URL, blob);
+					return;
+				} catch (_) {
+					// Fallback below when sendBeacon is unavailable or blocked.
+				}
+			}
+
+			fetch(GAS_URL, {
+				method: 'POST',
+				headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+				body: JSON.stringify(body),
+				keepalive: true
+			}).catch(() => {
+				// No-op: logging should never block the user flow.
+			});
+		}
+
+		function setupTabs() {
+			el.tabBtnCurrent.addEventListener('click', () => {
+				state.activeTab = 'current';
+				updateTabs();
+			});
+			el.tabBtnArchive.addEventListener('click', async () => {
+				state.activeTab = 'archive';
+				updateTabs();
+				await ensureArchiveLoaded();
+			});
+			el.goArchiveBottomBtn.addEventListener('click', async () => {
+				state.activeTab = 'archive';
+				updateTabs();
+				await ensureArchiveLoaded();
+				el.archiveMonthSelect.scrollIntoView({ behavior: 'smooth', block: 'start' });
+			});
+			updateTabs();
+		}
+
+		function setupArchiveSelector() {
+			const months = buildRecentMonths(12);
+			el.archiveMonthSelect.innerHTML = months
+				.map((ym) => `<option value="${ym}">${formatYmToJa(ym)}</option>`)
+				.join('');
+
+			el.archiveMonthSelect.addEventListener('change', async (event) => {
+				const ym = event.target.value;
+				try {
+					await loadArchiveForMonth(ym, { showInlineLoading: true });
+				} catch (error) {
+					renderEmpty(el.archiveList, 'データの取得に失敗しました');
+					showToast('バックナンバー取得に失敗しました', 'error');
+				}
+			});
+		}
+
+		function setupDevPanel() {
+			state.isLocalMode = isLocalRuntime();
+			if (!state.isLocalMode) return;
+
+			el.devPanel.classList.remove('hidden');
+			el.devBadge.classList.remove('hidden');
+
+			const setButtonStyles = (selected) => {
+				el.devPanel.querySelectorAll('[data-dev-state]').forEach((btn) => {
+					const mode = btn.dataset.devState;
+					const active = mode === selected;
+					btn.className = active
+						? 'px-3 py-1.5 text-xs rounded-lg bg-emerald-500 text-white font-semibold ring-2 ring-white/60'
+						: 'px-3 py-1.5 text-xs rounded-lg bg-slate-600 text-slate-200 font-semibold';
+				});
+			};
+
+			setButtonStyles(getLocalTestStatus());
+
+			el.devPanel.querySelectorAll('[data-dev-state]').forEach((btn) => {
+				btn.addEventListener('click', () => {
+					const mode = btn.dataset.devState;
+					setLocalTestStatus(mode);
+					setButtonStyles(mode);
+					initApp(true);
+				});
+			});
+		}
+
+		async function initLiff() {
+			await liff.init({ liffId: LIFF_ID });
+			if (!liff.isLoggedIn()) {
+				liff.login();
+				return null;
+			}
+			return liff.getProfile();
+		}
+
+		let initialized = false;
+
+		async function initApp(isRefresh = false) {
+			if (!initialized) {
+				setupTabs();
+				setupArchiveSelector();
+				setupDevPanel();
+				bindCardClickEvents();
+				initialized = true;
+			} else if (!isRefresh) {
+				setupDevPanel();
+			}
+			el.registerLink.href = REGISTER_FORM_URL;
+
+			switchMainState('loading');
+			setLoadingMessage('LIFF認証を確認中...');
+
+			try {
+				if (state.isLocalMode) {
+					state.profile = {
+						userId: 'U_LOCAL_NOTICE_TEST_001',
+						displayName: 'ローカル利用者',
+						pictureUrl: 'https://placehold.jp/96x96.png'
+					};
+				} else {
+					const profile = await initLiff();
+					if (!profile) return;
+					state.profile = profile;
+				}
+
+				const ym = getCurrentYm();
+				setLoadingMessage('住民名簿と照合中...');
+				if (state.isLocalMode) {
+					const currentItemsPromise = fetchMonthlyItems(ym);
+					state.member = await fetchMemberProfile();
+					setLoadingMessage('今月の回覧データを取得中...');
+					state.currentItems = await currentItemsPromise;
+				} else {
+					let bootstrap = null;
+					try {
+						bootstrap = await fetchNoticeBootstrap(ym);
+					} catch (_) {
+						// Fallback to legacy separate calls when unified endpoint is unavailable.
+					}
+
+					if (bootstrap) {
+						state.member = bootstrap.member;
+						state.currentItems = bootstrap.items;
+					} else {
+						const currentItemsPromise = fetchMonthlyItems(ym);
+						state.member = await fetchMemberProfile();
+						setLoadingMessage('今月の回覧データを取得中...');
+						state.currentItems = await currentItemsPromise;
+					}
+				}
+
+				el.userName.textContent = state.member.memberName;
+				el.userAvatar.src = state.profile.pictureUrl || 'https://placehold.jp/96x96.png';
+				el.registerLink.href = state.member.registerFormUrl || REGISTER_FORM_URL;
+
+				if (!state.member.isRegistered || state.member.status === 'not_registered') {
+					switchMainState('not_registered');
+					return;
+				}
+				if (state.member.status === 'suspended') {
+					switchMainState('suspended');
+					return;
+				}
+
+				setLoadingMessage('今月の回覧データを取得中...');
+				renderCurrentItems(state.currentItems, ym);
+				renderEmpty(el.archiveList, 'バックナンバーを見ると読み込みます');
+				state.archiveLoaded = false;
+
+				switchMainState('app');
+				logAction({ action_type: 'page_view', ym });
+				prefetchArchiveSilently();
+			} catch (error) {
+				console.error(error);
+				switchMainState('app');
+				renderCurrentItems([], getCurrentYm());
+				renderArchiveItems([], el.archiveMonthSelect.value || getCurrentYm());
+				showToast('初期化中にエラーが発生しました', 'error');
+			}
+		}
+
+		initApp();
+	</script>
+</body>
+</html>
