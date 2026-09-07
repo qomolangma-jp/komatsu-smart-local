@@ -10,18 +10,18 @@
     />
     <style>
       :root {
-        --bg: #fffbf5;
+        --bg: #f5fbff;
         --surface: #ffffff;
-        --primary: #ff5e36;
-        --primary-dark: #e03e12;
-        --primary-light: #ffebe5;
-        --accent-yellow: #ffc107;
-        --accent-pink: #ff4081;
-        --accent-green: #06c755;
-        --text: #4a2c11;
-        --muted: #7d5a3c;
-        --line: #ffe2cc;
-        --card-shadow: 0 15px 35px rgba(255, 94, 54, 0.12);
+        --primary: #0a6eb8;
+        --primary-dark: #0a4d8f;
+        --primary-light: #eaf7ff;
+        --accent-yellow: #ffd15d;
+        --accent-pink: #ff8bb3;
+        --accent-green: #14b66c;
+        --text: #173d63;
+        --muted: #4f6d8a;
+        --line: #dcecf8;
+        --card-shadow: 0 15px 35px rgba(10, 110, 184, 0.12);
         --radius: 28px;
       }
 
@@ -73,11 +73,12 @@
       .brand-mark {
         width: 44px; height: 44px;
         border-radius: 14px;
-        background: linear-gradient(135deg, #ff9100, #ff3d00);
+        background: linear-gradient(135deg, #0a6eb8, #14b66c);
         color: white;
         display: grid; place-items: center;
-        box-shadow: 0 6px 14px rgba(255, 61, 0, 0.3);
+        box-shadow: 0 6px 14px rgba(10, 110, 184, 0.25);
         font-size: 22px;
+        overflow: hidden;
       }
 
       .nav {
@@ -91,10 +92,10 @@
       .nav-cta {
         padding: 12px 26px;
         border-radius: 999px;
-        background: var(--accent-green);
+        background: linear-gradient(135deg, var(--primary), var(--accent-green));
         color: white;
         font-weight: 900;
-        box-shadow: 0 8px 20px rgba(6, 199, 85, 0.3);
+        box-shadow: 0 8px 20px rgba(10, 110, 184, 0.22);
         transition: transform .2s ease;
         display: inline-flex;
         align-items: center;
@@ -165,9 +166,9 @@
         cursor: pointer;
         border: none;
         text-decoration: none;
-        background: linear-gradient(135deg, #06c755, #00b900);
+        background: linear-gradient(135deg, var(--primary), var(--accent-green));
         color: white;
-        box-shadow: 0 14px 28px rgba(6, 199, 85, 0.35);
+        box-shadow: 0 14px 28px rgba(10, 110, 184, 0.28);
       }
       .btn-line:hover {
         transform: translateY(-3px) scale(1.02);
@@ -574,8 +575,10 @@
     <header class="topbar">
       <div class="container topbar-inner">
         <div class="brand">
-          <div class="brand-mark">🏠</div>
-          <span>町内会DX</span>
+          <div class="brand-mark">
+            <img src="../common/logo_square.jpg" alt="小松Smart自治PJ" />
+          </div>
+          <span>小松 Smart自治PJ</span>
         </div>
         <nav class="nav">
           <a href="#problem">よくあるお悩み</a>

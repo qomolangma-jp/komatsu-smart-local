@@ -139,26 +139,33 @@
   <div class="app-shell app-shell--desktop">
     <!-- 🎛️ 新デザイン：画面切り替えカプセル型タブ（ヘッダー） -->
     <div class="app-header">
-    <div class="bg-slate-800/80 p-1 rounded-xl flex relative border border-slate-700 shadow-inner">
-      <!-- 予約フォームタブ -->
-      <button 
-        id="tabBtnForm" 
-        onclick="switchCanvas('form')" 
-        class="flex-1 py-2.5 text-xs font-bold rounded-lg transition-all duration-300 flex items-center justify-center space-x-2 text-slate-400 hover:text-slate-200"
-      >
-        <i class="fa-solid fa-file-pen text-sm"></i>
-        <span>予約を申し込む</span>
-      </button>
-      <!-- 空き状況カレンダータブ -->
-      <button 
-        id="tabBtnCalendar" 
-        onclick="switchCanvas('calendar')" 
-        class="flex-1 py-2.5 text-xs font-bold rounded-lg transition-all duration-300 flex items-center justify-center space-x-2 bg-gradient-to-b from-emerald-500 to-emerald-600 text-white shadow-md transform scale-100"
-      >
-        <i class="fa-regular fa-calendar-days text-sm"></i>
-        <span>空き状況カレンダー</span>
-      </button>
-    </div>
+      <div class="app-header__brand">
+        <img src="../common/logo_square.jpg" alt="小松Smart自治PJ" class="app-header__logo" />
+        <div class="app-header__brand-text">
+          <div class="app-header__brand-title">小松</div>
+          <div class="app-header__brand-sub">Smart自治PJ</div>
+        </div>
+      </div>
+      <div class="bg-white/10 p-1 rounded-xl flex relative border border-white/20 shadow-inner backdrop-blur-sm">
+        <!-- 予約フォームタブ -->
+        <button 
+          id="tabBtnForm" 
+          onclick="switchCanvas('form')" 
+          class="flex-1 py-2.5 text-xs font-bold rounded-lg transition-all duration-300 flex items-center justify-center space-x-2 text-white/85 hover:text-white"
+        >
+          <i class="fa-solid fa-file-pen text-sm"></i>
+          <span>予約を申し込む</span>
+        </button>
+        <!-- 空き状況カレンダータブ -->
+        <button 
+          id="tabBtnCalendar" 
+          onclick="switchCanvas('calendar')" 
+          class="flex-1 py-2.5 text-xs font-bold rounded-lg transition-all duration-300 flex items-center justify-center space-x-2 bg-gradient-to-b from-[#0a6eb8] to-[#14b66c] text-white shadow-md transform scale-100"
+        >
+          <i class="fa-regular fa-calendar-days text-sm"></i>
+          <span>空き状況カレンダー</span>
+        </button>
+      </div>
 
     <!-- 🔧 ローカルテスト専用：ステータス切替スイッチ -->
     <div id="devPanel" class="hidden mt-2.5 p-2 bg-slate-950/60 rounded-lg flex items-center justify-between text-[10px] border border-slate-800">
@@ -176,10 +183,10 @@
     <!-- ========================================== -->
     <div id="canvasForm" class="flex flex-col flex-1 overflow-hidden hidden">
       <!-- サブヘッダー -->
-      <div class="bg-gradient-to-r from-brand-600 to-brand-700 text-white px-5 py-3 shadow-sm flex items-center justify-between">
+      <div class="bg-gradient-to-r from-[#0a6eb8] to-[#14b66c] text-white px-5 py-3 shadow-sm flex items-center justify-between">
         <div class="flex items-center space-x-2">
-          <i class="fa-solid fa-hotel text-sm text-brand-100"></i>
-          <h2 class="text-xs font-bold tracking-wider uppercase text-brand-100">DX町内会公民館窓口フォーム</h2>
+          <i class="fa-solid fa-hotel text-sm text-white/80"></i>
+          <h2 class="text-xs font-bold tracking-wider uppercase text-white/90">DX町内会公民館窓口フォーム</h2>
         </div>
         <div id="devBadge" class="hidden bg-amber-500 text-white text-[9px] font-bold px-1.5 py-0.5 rounded animate-pulse">
           ローカルモード
@@ -206,7 +213,7 @@
         <a 
           href="https://liff.line.me/2008962357-ePaQmDO9" 
           target="_blank" 
-          class="w-full max-w-[280px] py-4 bg-[#06C755] hover:bg-[#05B34C] text-white font-bold rounded-2xl shadow-lg shadow-emerald-100 flex items-center justify-center space-x-2 transition"
+          class="w-full max-w-[280px] py-4 bg-gradient-to-r from-[#0a6eb8] to-[#14b66c] hover:brightness-105 text-white font-bold rounded-2xl shadow-lg shadow-blue-100 flex items-center justify-center space-x-2 transition"
         >
           <i class="fa-solid fa-id-card"></i>
           <span>町民名簿に登録する (外部)</span>
