@@ -31,9 +31,19 @@
     return PAGE_CONFIGS[key] || {};
   }
 
+  function getRequiredPageConfig(pageKey) {
+    var key = String(pageKey || "").trim();
+    var config = PAGE_CONFIGS[key] || {};
+    if (!config.liffId || !config.gasUrl) {
+      throw new Error("AppConfig is missing required config for page: " + key);
+    }
+    return config;
+  }
+
   global.AppConfig = {
     SHARED_GAS_URL: SHARED_GAS_URL,
     PAGE_CONFIGS: PAGE_CONFIGS,
-    getPageConfig: getPageConfig
+    getPageConfig: getPageConfig,
+    getRequiredPageConfig: getRequiredPageConfig
   };
 })(typeof window !== "undefined" ? window : globalThis);

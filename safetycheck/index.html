@@ -319,7 +319,7 @@
 
   <script src="../common/app-config.js"></script>
   <script>
-    const PAGE_CONFIG = (window.AppConfig && window.AppConfig.getPageConfig('safetycheck')) || {};
+    const PAGE_CONFIG = (window.AppConfig && window.AppConfig.getRequiredPageConfig('safetycheck')) || {};
 
     function normalizeGasWebAppUrl(url) {
       const value = String(url || '').trim();
@@ -333,7 +333,7 @@
     const GAS_API_URL_RAW = PAGE_CONFIG.gasUrl || "";
     const GAS_API_URL = normalizeGasWebAppUrl(GAS_API_URL_RAW);
     const SAFETYCHECK_GATEWAY_URL = String(PAGE_CONFIG.gatewayUrl || '').trim();
-    const LIFF_ID = PAGE_CONFIG.liffId || "2008893549-RZBPRM9X";
+    const LIFF_ID = PAGE_CONFIG.liffId;
     const params = new URLSearchParams(window.location.search);
 
     function resolveSurveyIdFromUrl() {
