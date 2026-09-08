@@ -210,7 +210,8 @@
 			currentItems: [],
 			archiveItems: [],
 			archiveLoaded: false,
-			archiveLoading: false
+			archiveLoading: false,
+			availableArchiveMonths: []
 		};
 
 		const el = {
@@ -278,6 +279,33 @@
 				months.push(ym);
 			}
 			return months;
+		}
+
+		function registerArchiveMonth(ym) {
+			if (!ym || !/^\d{4}-\d{2}$/.test(ym)) return;
+			const nextMonths = Array.from(new Set([...(state.availableArchiveMonths || []), ym]));
+			state.availableArchiveMonths = nextMonths.sort((a, b) => (a < b ? 1 : -1));
+		}
+
+		function getSelectableArchiveMonths() {
+			const months = state.availableArchiveMonths && state.availableArchiveMonths.length > 0
+				? state.availableArchiveMonths
+				: buildRecentMonths(12);
+			return Array.from(new Set(months)).sort((a, b) => (a < b ? 1 : -1));
+		}
+
+		function refreshArchiveSelector() {
+			const months = getSelectableArchiveMonths();
+			if (!months.length) return;
+			const current = el.archiveMonthSelect.value || months[0];
+			el.archiveMonthSelect.innerHTML = months
+				.map((ym) => `<option value="${ym}">${formatYmToJa(ym)}</option>`)
+				.join('');
+			if (months.includes(current)) {
+				el.archiveMonthSelect.value = current;
+			} else {
+				el.archiveMonthSelect.value = months[0];
+			}
 		}
 
 		function switchMainState(next) {
@@ -593,7 +621,10 @@
 		async function fetchMonthlyItems(ym) {
 			const userId = state.profile?.userId || '';
 			const cached = readMonthlyItemsCache(ym, userId);
-			if (cached) return cached;
+			if (cached) {
+				registerArchiveMonth(ym);
+				return cached;
+			}
 
 			const raw = await gasGet({
 				action: 'get_monthly_items',
@@ -605,6 +636,11 @@
 			const normalized = rows
 				.map((item) => toMonthlyItem(item))
 				.filter((item) => item.label || item.url !== '#');
+
+			if (normalized.length > 0) {
+				registerArchiveMonth(ym);
+				refreshArchiveSelector();
+			}
 
 			writeMonthlyItemsCache(ym, userId, normalized);
 
@@ -842,10 +878,7 @@
 		}
 
 		function setupArchiveSelector() {
-			const months = buildRecentMonths(12);
-			el.archiveMonthSelect.innerHTML = months
-				.map((ym) => `<option value="${ym}">${formatYmToJa(ym)}</option>`)
-				.join('');
+			refreshArchiveSelector();
 
 			el.archiveMonthSelect.addEventListener('change', async (event) => {
 				const ym = event.target.value;
@@ -928,6 +961,7 @@
 
 				const ym = getCurrentYm();
 				setLoadingMessage('住民名簿と照合中...');
+				registerArchiveMonth(ym);
 				if (state.isLocalMode) {
 					const currentItemsPromise = fetchMonthlyItems(ym);
 					state.member = await fetchMemberProfile();
@@ -967,6 +1001,7 @@
 
 				setLoadingMessage('今月の回覧データを取得中...');
 				renderCurrentItems(state.currentItems, ym);
+				refreshArchiveSelector();
 				renderEmpty(el.archiveList, 'バックナンバーを見ると読み込みます');
 				state.archiveLoaded = false;
 

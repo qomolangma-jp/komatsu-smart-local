@@ -443,4 +443,65 @@ body.app-page {
     max-height: none;
     border-radius: 0;
   }
+
+  .app-header {
+    padding: 0.7rem 0.75rem 0.65rem;
+  }
+
+  .app-header__brand {
+    gap: 0.55rem;
+    margin-bottom: 0.6rem;
+  }
+
+  .app-header__logo {
+    width: 42px;
+    height: 42px;
+    border-radius: 12px;
+  }
+
+  .app-header__brand-title {
+    font-size: 1rem;
+  }
+
+  .app-header__brand-sub {
+    font-size: 0.62rem;
+    letter-spacing: 0.08em;
+  }
+
+  .app-header__tab {
+    padding: 0.62rem 0.45rem;
+    font-size: 0.62rem;
+    line-height: 1.2;
+  }
+
+  .app-toolbar {
+    padding: 0.7rem 0.8rem;
+  }
+
+  .app-toolbar__title {
+    font-size: 0.68rem;
+    letter-spacing: 0.03em;
+  }
+
+  .app-card {
+    padding: 0.7rem 0.8rem;
+  }
+
+  .app-section {
+    padding: 0.8rem;
+  }
+
+  .app-user-row {
+    gap: 0.55rem;
+    align-items: center;
+  }
+
+  .app-user-row__avatar {
+    width: 42px;
+    height: 42px;
+  }
+
+  .app-user-row__name {
+    font-size: 0.83rem;
+  }
 }
