@@ -7,20 +7,20 @@
       gasUrl: SHARED_GAS_URL
     },
     bookroom: {
-      liffId: "2008893549-vbVJOMEv",
+      liffId: "2011489610-2trNDx6c",
       gasUrl: SHARED_GAS_URL
     },
     notice: {
-      liffId: "2008893549-d75d72lX",
+      liffId: "2011489610-y90vBXBu",
       gasUrl: SHARED_GAS_URL,
       registerFormUrl: "https://liff.line.me/2011489610-3P5OEF1C"
     },
     attendance: {
-      liffId: "2008893549-jeCNKx4Y",
+      liffId: "2011489610-IM9eN1yu",
       gasUrl: SHARED_GAS_URL
     },
     safetycheck: {
-      liffId: "2008893549-RZBPRM9X",
+      liffId: "2011489610-RZBPRM9X",
       gasUrl: SHARED_GAS_URL,
       gatewayUrl: ""
     }
