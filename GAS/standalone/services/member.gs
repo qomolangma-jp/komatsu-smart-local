@@ -119,7 +119,7 @@ function handleMemberProfileUpsert(payload) {
   var values = sheet.getDataRange().getDisplayValues();
 
   if (values.length === 0) {
-    var defaultHeader = ["line_id", "line_name", "name_1st", "name_2nd", "status", "updated_at"];
+    var defaultHeader = ["created_at", "line_id", "line_name", "name_1st", "name_2nd", "status", "updated_at"];
     sheet.appendRow(defaultHeader);
     values = [defaultHeader];
   }
@@ -130,12 +130,25 @@ function handleMemberProfileUpsert(payload) {
   function ensureColumn(colName) {
     var key = String(colName || "").trim();
     if (!key) return;
-    if (map[key.toLowerCase()] !== undefined) return;
-    headers.push(key);
-    map[key.toLowerCase()] = headers.length - 1;
-    sheet.getRange(1, headers.length).setValue(key);
+    var normalizedKey = key.toLowerCase();
+    if (map[normalizedKey] !== undefined) return;
+
+    if (normalizedKey === "created_at") {
+      headers.unshift(key);
+    } else {
+      headers.push(key);
+    }
+
+    map = buildHeaderIndexMap(headers);
+    var headerRowIndex = sheet.getLastRow() > 0 ? 1 : 0;
+    if (headerRowIndex === 1) {
+      sheet.getRange(1, 1, 1, headers.length).setValues([headers]);
+    } else {
+      sheet.getRange(1, 1, 1, headers.length).setValues([headers]);
+    }
   }
 
+  ensureColumn("created_at");
   Object.keys(payload).forEach(function (k) {
     if (k === "action" || k === "liff_token") return;
     ensureColumn(k);
@@ -168,6 +181,11 @@ function handleMemberProfileUpsert(payload) {
     rowData[idx] = payload[k];
   });
 
+  if (map["created_at"] !== undefined) {
+    if (targetRow <= 0 || String(rowData[map["created_at"]] || "").trim() === "") {
+      rowData[map["created_at"]] = new Date();
+    }
+  }
   rowData[map["updated_at"]] = new Date();
 
   if (targetRow > 0) {
