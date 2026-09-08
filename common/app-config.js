@@ -1,9 +1,9 @@
 (function (global) {
-  var SHARED_GAS_URL = "https://script.google.com/macros/s/AKfycbzMI_ssF1Lvd5xVq6oyxZpYzWGlfVyU2edi7Lcq2cvyr_ADZjJfhvmQHRJfbB-1JmFn/exec";
+  var SHARED_GAS_URL = "https://script.google.com/macros/s/AKfycbzFqNc9tAB_TDqyNIXe_rkbHB6gorUGFljSGtc8boyRsW6zcztZ8-2JgRVipe9WOnuA/exec";
 
   var PAGE_CONFIGS = {
     profile: {
-      liffId: "2008893549-jeCNKx4Y",
+      liffId: "2011489610-3P5OEF1C",
       gasUrl: SHARED_GAS_URL
     },
     bookroom: {
@@ -13,7 +13,7 @@
     notice: {
       liffId: "2008893549-d75d72lX",
       gasUrl: SHARED_GAS_URL,
-      registerFormUrl: "https://liff.line.me/2008893549-jeCNKx4Y"
+      registerFormUrl: "https://liff.line.me/2011489610-3P5OEF1C"
     },
     attendance: {
       liffId: "2008893549-jeCNKx4Y",
