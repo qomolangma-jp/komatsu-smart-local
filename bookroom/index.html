@@ -491,6 +491,35 @@
     let liffProfile = null;
     let bookedData = []; 
     let memberProfile = null; 
+    const BOOKROOM_RESERVATION_CACHE_TTL_MS = 2 * 60 * 1000;
+
+    function getReservationCacheKey() {
+      return "kitaasai_bookroom_reservations";
+    }
+
+    function readReservationCache() {
+      try {
+        const raw = sessionStorage.getItem(getReservationCacheKey());
+        if (!raw) return null;
+        const parsed = JSON.parse(raw);
+        if (!parsed || !Array.isArray(parsed.items) || !parsed.ts) return null;
+        if (Date.now() - parsed.ts > BOOKROOM_RESERVATION_CACHE_TTL_MS) return null;
+        return parsed.items;
+      } catch (_) {
+        return null;
+      }
+    }
+
+    function writeReservationCache(items) {
+      try {
+        sessionStorage.setItem(getReservationCacheKey(), JSON.stringify({
+          ts: Date.now(),
+          items: Array.isArray(items) ? items : []
+        }));
+      } catch (_) {
+        // Ignore storage failures.
+      }
+    }
 
     // 管理されている時間枠リスト
     const TIME_SLOTS_MASTER = ["午前", "午後", "夜間"];
@@ -604,19 +633,18 @@ async function initApp() {
             document.getElementById("userAvatar").src = liffProfile.pictureUrl;
           }
           
-          // 2. 名簿情報と予約一覧を並列で取得（高速化）
-          const [profileResult, _] = await Promise.all([
-            fetchMemberProfile(liffProfile.userId),
-            fetchReservations()
-          ]);
-          memberProfile = profileResult;
-          
-          // 3. カレンダー描画とローディング解除
+          // 2. 名簿確認は先に進めて、予約一覧はバックグラウンドで取得して表示を早める
+          const memberPromise = fetchMemberProfile(liffProfile.userId);
+          const reservationsPromise = fetchReservations();
+          memberProfile = await memberPromise;
+
+          // 3. まず画面を表示し、予約データは後で反映する
+          applyMemberStatusUI();
+
+          // 4. 予約データが終わればカレンダーだけ更新する
+          await reservationsPromise;
           renderCalendar();
           setCalendarLoading(false);
-          
-          // 4. ステータス判定・画面表示
-          applyMemberStatusUI();
           
         } catch (error) {
           setCalendarLoading(false);
@@ -734,8 +762,18 @@ async function initApp() {
     // 表示コントロール & ロジック
     // ----------------------------------------------------
     async function fetchReservations() {
+      const cached = readReservationCache();
+      if (Array.isArray(cached)) {
+        bookedData = cached;
+        return true;
+      }
+
       try {
-        const response = await fetch(GAS_URL, { method: "GET", cache: "no-store" });
+        const response = await fetch(`${GAS_URL}?_t=${Date.now()}`, {
+          method: "GET",
+          cache: "no-store",
+          credentials: "omit"
+        });
         if (!response.ok) {
           throw new Error(`HTTP ${response.status}`);
         }
@@ -746,11 +784,16 @@ async function initApp() {
         }
 
         bookedData = data;
+        writeReservationCache(data);
         return true;
       } catch (error) {
         console.error("予約データ取得エラー:", error);
+        const cachedFallback = readReservationCache();
+        if (Array.isArray(cachedFallback)) {
+          bookedData = cachedFallback;
+          return true;
+        }
         bookedData = [];
-        showToast("データ取得に失敗しました", "error");
         return false;
       }
     }

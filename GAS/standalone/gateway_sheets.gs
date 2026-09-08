@@ -30,9 +30,13 @@ function resolveSheetNameWithFallback(spreadsheetId, requestedSheetName) {
   pushCandidate(name);
   if (name === "users" || name === "名簿") {
     pushCandidate(name === "users" ? "名簿" : "users");
+  } else if (name === "booklist" || name === "予約台帳") {
+    pushCandidate(name === "booklist" ? "予約台帳" : "booklist");
   } else {
     pushCandidate("users");
     pushCandidate("名簿");
+    pushCandidate("booklist");
+    pushCandidate("予約台帳");
   }
 
   for (var i = 0; i < candidates.length; i++) {

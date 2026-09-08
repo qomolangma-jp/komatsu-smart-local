@@ -34,7 +34,7 @@ Set these before deployment:
 - SS_ATTENDANCE_ID
 - SS_CHAT_ID (optional, defaults to SS_BOOKROOM_ID)
 - SHEET_MEMBER_MAIN (default: users)
-- SHEET_BOOKROOM_MAIN (default: 予約台帳)
+- SHEET_BOOKROOM_MAIN (default: booklist)
 - SHEET_CHAT_LOG (default: chat)
 - SHEET_WEBHOOK_LOG (default: webhook_log)
 - SHEET_PUSH_LOG (default: push_log)

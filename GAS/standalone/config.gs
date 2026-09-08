@@ -39,7 +39,7 @@ var APP_CONFIG = (function buildConfig() {
     },
     sheets: {
       memberMain: get("SHEET_MEMBER_MAIN", "users"),
-      bookroomMain: get("SHEET_BOOKROOM_MAIN", "予約台帳"),
+      bookroomMain: get("SHEET_BOOKROOM_MAIN", "booklist"),
       chatLog: get("SHEET_CHAT_LOG", "chat"),
       webhookLog: get("SHEET_WEBHOOK_LOG", "webhook_log"),
       pushLog: get("SHEET_PUSH_LOG", "push_log"),
