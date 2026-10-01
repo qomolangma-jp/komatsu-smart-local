@@ -1,868 +1,504 @@
 <!DOCTYPE html>
 <html lang="ja">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>町内会DX | スマホでらくらく！新しい地域の助け合い・連絡のカタチ</title>
-    <meta
-      name="description"
-      content="LINEとGoogleで町内会の準備や連絡がとっても便利に！紙の回覧板や出欠集計の手間をなくし、みんなが笑顔になれる新しい町内会DX。"
-    />
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>小松 Smart自治PJ (KSL)</title>
+    
+    <!-- Google Fonts: Noto Sans JP -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
+    
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Tailwind CSS (CDN) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['"Noto Sans JP"', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            blue: '#004789',
+                            cyan: '#0097a7',
+                            green: '#00a86b',
+                            line: '#06C755',
+                            dark: '#1e293b'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
     <style>
-      :root {
-        --bg: #f5fbff;
-        --surface: #ffffff;
-        --primary: #0a6eb8;
-        --primary-dark: #0a4d8f;
-        --primary-light: #eaf7ff;
-        --accent-yellow: #ffd15d;
-        --accent-pink: #ff8bb3;
-        --accent-green: #14b66c;
-        --text: #173d63;
-        --muted: #4f6d8a;
-        --line: #dcecf8;
-        --card-shadow: 0 15px 35px rgba(10, 110, 184, 0.12);
-        --radius: 28px;
-      }
-
-      * { box-sizing: border-box; }
-      html { scroll-behavior: smooth; }
-      body {
-        margin: 0;
-        font-family: "Hiragino Sans", "Yu Gothic", "Meiryo", sans-serif;
-        background:
-          radial-gradient(circle at top left, #fff0df, transparent 40%),
-          radial-gradient(circle at top right, #ffe5e0, transparent 35%),
-          var(--bg);
-        color: var(--text);
-        line-height: 1.8;
-      }
-
-      a { color: inherit; text-decoration: none; }
-      img { max-width: 100%; height: auto; display: block; border-radius: 20px; }
-
-      .container {
-        width: min(1180px, calc(100% - 32px));
-        margin: 0 auto;
-      }
-
-      /* ヘッダー */
-      .topbar {
-        position: sticky;
-        top: 0;
-        z-index: 1000;
-        backdrop-filter: blur(12px);
-        background: rgba(255, 251, 245, 0.92);
-        border-bottom: 2px solid var(--line);
-      }
-
-      .topbar-inner {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        min-height: 76px;
-      }
-
-      .brand {
-        display: flex; align-items: center; gap: 10px;
-        font-weight: 900;
-        font-size: 1.4rem;
-        color: var(--primary-dark);
-      }
-
-      .brand-mark {
-        width: 44px; height: 44px;
-        border-radius: 14px;
-        background: linear-gradient(135deg, #0a6eb8, #14b66c);
-        color: white;
-        display: grid; place-items: center;
-        box-shadow: 0 6px 14px rgba(10, 110, 184, 0.25);
-        font-size: 22px;
-        overflow: hidden;
-      }
-
-      .nav {
-        display: flex; align-items: center; gap: 20px;
-        font-weight: 800;
-        font-size: 1.05rem;
-      }
-
-      .nav a:hover { color: var(--primary); }
-
-      .nav-cta {
-        padding: 12px 26px;
-        border-radius: 999px;
-        background: linear-gradient(135deg, var(--primary), var(--accent-green));
-        color: white;
-        font-weight: 900;
-        box-shadow: 0 8px 20px rgba(10, 110, 184, 0.22);
-        transition: transform .2s ease;
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-      }
-      .nav-cta:hover { transform: scale(1.05); }
-
-      /* メインヒーロー（FV） */
-      .hero {
-        padding: 50px 0 60px;
-        position: relative;
-        overflow: hidden;
-      }
-
-      .hero-grid {
-        display: grid;
-        grid-template-columns: 1.1fr 0.9fr;
-        gap: 32px;
-        align-items: center;
-      }
-
-      .eyebrow {
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-        padding: 8px 20px;
-        border-radius: 999px;
-        font-size: 0.98rem;
-        background: #fff0bb;
-        color: #b35900;
-        font-weight: 900;
-        border: 2px solid var(--accent-yellow);
-        box-shadow: 0 4px 10px rgba(255, 193, 7, 0.3);
-      }
-
-      h1 {
-        margin: 18px 0 20px;
-        font-size: clamp(2.1rem, 4.2vw, 3.4rem);
-        line-height: 1.35;
-        letter-spacing: -0.02em;
-        font-weight: 900;
-        color: #3d1e03;
-      }
-
-      .highlight {
-        background: linear-gradient(transparent 60%, #ffc107 60%);
-        padding: 0 4px;
-      }
-
-      .lead {
-        font-size: 1.2rem;
-        color: var(--muted);
-        font-weight: 700;
-        margin-bottom: 30px;
-      }
-
-      .btn-line {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        gap: 12px;
-        border-radius: 999px;
-        padding: 20px 40px;
-        font-weight: 900;
-        font-size: 1.3rem;
-        transition: .2s ease;
-        text-align: center;
-        cursor: pointer;
-        border: none;
-        text-decoration: none;
-        background: linear-gradient(135deg, var(--primary), var(--accent-green));
-        color: white;
-        box-shadow: 0 14px 28px rgba(10, 110, 184, 0.28);
-      }
-      .btn-line:hover {
-        transform: translateY(-3px) scale(1.02);
-        box-shadow: 0 18px 34px rgba(6, 199, 85, 0.45);
-      }
-
-      .hero-badges {
-        display: flex;
-        gap: 12px;
-        flex-wrap: wrap;
-        margin-top: 28px;
-      }
-
-      .badge {
-        background: white;
-        border: 2px solid #ffd5b5;
-        border-radius: 999px;
-        padding: 8px 18px;
-        font-size: 0.92rem;
-        color: var(--primary-dark);
-        font-weight: 900;
-        box-shadow: 0 4px 12px rgba(255, 94, 54, 0.08);
-      }
-
-      .hero-img-box {
-        position: relative;
-      }
-
-      .hero-img-box img {
-        box-shadow: var(--card-shadow);
-        border: 4px solid white;
-      }
-
-      .hero-img-badge {
-        position: absolute;
-        bottom: -20px;
-        left: -20px;
-        background: white;
-        padding: 16px 24px;
-        border-radius: 24px;
-        box-shadow: 0 10px 25px rgba(0,0,0,0.12);
-        font-weight: 900;
-        color: var(--primary-dark);
-        border: 2px solid #ffe2cc;
-      }
-
-      /* 共通セクション */
-      section {
-        padding: 80px 0;
-      }
-
-      .section-head {
-        text-align: center;
-        max-width: 820px;
-        margin: 0 auto 50px;
-      }
-
-      .section-head h2 {
-        margin: 0 0 16px;
-        font-size: clamp(1.9rem, 3.4vw, 2.7rem);
-        line-height: 1.35;
-        font-weight: 900;
-        color: #3d1e03;
-      }
-
-      .section-head p {
-        margin: 0;
-        color: var(--muted);
-        font-size: 1.15rem;
-        font-weight: 700;
-      }
-
-      /* お悩みセクション */
-      .problem-section {
-        background: #fff4ea;
-        border-top: 2px solid var(--line);
-        border-bottom: 2px solid var(--line);
-      }
-
-      .problem-flex {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 40px;
-        align-items: center;
-        max-width: 1000px;
-        margin: 0 auto 40px;
-      }
-
-      .problem-grid {
-        display: grid;
-        gap: 18px;
-      }
-
-      .problem-card {
-        background: white;
-        border: 2px solid #ffcca3;
-        border-radius: 24px;
-        padding: 20px 24px;
-        display: flex;
-        align-items: center;
-        gap: 16px;
-        box-shadow: 0 8px 20px rgba(0,0,0,0.03);
-      }
-
-      .problem-card .emo {
-        font-size: 2rem;
-        flex-shrink: 0;
-      }
-
-      .problem-card p {
-        margin: 0;
-        font-weight: 800;
-        font-size: 1.05rem;
-        color: #4a2c11;
-      }
-
-      .problem-summary {
-        text-align: center;
-        background: linear-gradient(135deg, #ffe0b2, #ffcc80);
-        border-radius: 28px;
-        padding: 30px;
-        max-width: 860px;
-        margin: 0 auto;
-        box-shadow: 0 10px 24px rgba(255, 152, 0, 0.2);
-      }
-
-      .problem-summary p {
-        margin: 0;
-        font-size: 1.25rem;
-        font-weight: 900;
-        color: #3e1a00;
-        line-height: 1.7;
-      }
-
-      /* 解決策・機能一覧 */
-      .grid-3 {
-        display: grid;
-        grid-template-columns: repeat(3, minmax(0, 1fr));
-        gap: 24px;
-      }
-
-      .card {
-        background: white;
-        border: 3px solid #ffe2cc;
-        border-radius: var(--radius);
-        overflow: hidden;
-        box-shadow: var(--card-shadow);
-        transition: transform .2s ease;
-      }
-
-      .card:hover {
-        transform: translateY(-6px);
-        border-color: var(--primary);
-      }
-
-      .card-img-wrapper {
-        height: 180px;
-        overflow: hidden;
-      }
-
-      .card-img-wrapper img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        border-radius: 0;
-      }
-
-      .card-body {
-        padding: 24px;
-      }
-
-      .card h3 {
-        margin: 0 0 12px;
-        font-size: 1.3rem;
-        font-weight: 900;
-        color: var(--primary-dark);
-        display: flex;
-        align-items: center;
-        gap: 8px;
-      }
-
-      .card p {
-        margin: 0;
-        color: var(--muted);
-        font-size: 1rem;
-        font-weight: 700;
-      }
-
-      /* メリット・わくわく理由 */
-      .benefits-section {
-        background: linear-gradient(180deg, #fffbf5 0%, #fff0e5 100%);
-        border-top: 2px solid var(--line);
-        border-bottom: 2px solid var(--line);
-      }
-
-      .benefit-box {
-        background: white;
-        border-radius: 32px;
-        padding: 28px;
-        border: 3px solid var(--line);
-        box-shadow: var(--card-shadow);
-        margin-bottom: 30px;
-        display: grid;
-        grid-template-columns: 280px 1fr;
-        gap: 30px;
-        align-items: center;
-      }
-
-      .benefit-img img {
-        width: 100%;
-        height: 180px;
-        object-fit: cover;
-      }
-
-      .benefit-content h3 {
-        margin: 0 0 12px;
-        font-size: 1.4rem;
-        font-weight: 900;
-        color: #3d1e03;
-        display: flex;
-        align-items: center;
-        gap: 12px;
-      }
-
-      .benefit-badge-mini {
-        background: linear-gradient(135deg, var(--accent-yellow), #ff9100);
-        color: white;
-        font-size: 1.1rem;
-        padding: 2px 14px;
-        border-radius: 999px;
-      }
-
-      .benefit-content p {
-        margin: 0;
-        font-size: 1.08rem;
-        color: var(--muted);
-        font-weight: 700;
-      }
-
-      /* 簡単比較表 */
-      .compare-box {
-        background: white;
-        border-radius: 32px;
-        padding: 36px;
-        border: 3px solid var(--line);
-        box-shadow: var(--card-shadow);
-        margin-top: 50px;
-      }
-
-      .compare-box h3 {
-        text-align: center;
-        margin: 0 0 28px;
-        font-size: 1.6rem;
-        font-weight: 900;
-        color: var(--primary-dark);
-      }
-
-      .compare-table {
-        width: 100%;
-        border-collapse: collapse;
-      }
-
-      .compare-table th,
-      .compare-table td {
-        padding: 18px;
-        border-bottom: 2px solid var(--line);
-        text-align: left;
-        font-size: 1.05rem;
-      }
-
-      .compare-table th {
-        background: #fff3e6;
-        color: #3d1e03;
-        font-weight: 900;
-      }
-
-      .compare-table td strong {
-        color: var(--primary-dark);
-        font-weight: 900;
-      }
-
-      /* 今だけの限定枠 */
-      .limited-section {
-        padding: 50px 0;
-      }
-
-      .limited-card {
-        background: linear-gradient(135deg, #fff3cd, #ffe8a1);
-        border: 3px dashed #ffb300;
-        border-radius: 32px;
-        padding: 40px 30px;
-        text-align: center;
-        max-width: 900px;
-        margin: 0 auto;
-        box-shadow: 0 12px 30px rgba(255, 179, 0, 0.25);
-      }
-
-      .limited-badge {
-        display: inline-block;
-        background: #ff1744;
-        color: white;
-        font-weight: 900;
-        padding: 8px 24px;
-        border-radius: 999px;
-        font-size: 1rem;
-        margin-bottom: 18px;
-        box-shadow: 0 6px 14px rgba(255, 23, 68, 0.3);
-      }
-
-      .limited-card h3 {
-        margin: 0 0 16px;
-        font-size: clamp(1.5rem, 2.8vw, 2rem);
-        color: #3e1a00;
-        font-weight: 900;
-      }
-
-      .limited-card p {
-        margin: 0;
-        font-size: 1.15rem;
-        color: #4a2c11;
-        font-weight: 700;
-        line-height: 1.8;
-      }
-
-      /* CTA・LINE案内 */
-      .cta-section {
-        padding: 70px 0 90px;
-      }
-
-      .cta-panel {
-        background: linear-gradient(135deg, #ff6d00, #ff3d00);
-        border-radius: 40px;
-        padding: clamp(30px, 5vw, 60px);
-        color: white;
-        box-shadow: 0 28px 56px rgba(255, 61, 0, 0.35);
-        text-align: center;
-      }
-
-      .cta-head {
-        max-width: 760px;
-        margin: 0 auto 30px;
-      }
-
-      .cta-head h2 {
-        margin: 0 0 16px;
-        font-size: clamp(2rem, 3.6vw, 2.8rem);
-        font-weight: 900;
-        line-height: 1.3;
-      }
-
-      .cta-head p {
-        margin: 0;
-        font-size: 1.2rem;
-        font-weight: 700;
-        opacity: 0.95;
-      }
-
-      .cta-line-card {
-        background: white;
-        border-radius: 32px;
-        padding: 40px 30px;
-        max-width: 600px;
-        margin: 0 auto;
-        color: var(--text);
-        box-shadow: 0 20px 40px rgba(0,0,0,0.2);
-      }
-
-      .cta-line-card h3 {
-        margin: 0 0 12px;
-        font-size: 1.5rem;
-        font-weight: 900;
-        color: #3d1e03;
-      }
-
-      .cta-line-card p {
-        margin: 0 0 24px;
-        font-size: 1.05rem;
-        color: var(--muted);
-        font-weight: 700;
-      }
-
-      footer {
-        padding: 36px 0 60px;
-        color: var(--muted);
-        text-align: center;
-        font-size: 0.95rem;
-        font-weight: 700;
-        border-top: 2px solid var(--line);
-      }
-
-      @media (max-width: 980px) {
-        .hero-grid, .grid-3, .problem-flex, .benefit-box { grid-template-columns: 1fr; text-align: center; }
-        .nav { display: none; }
-        .hero { padding-top: 30px; }
-        .problem-card { text-align: left; }
-        .compare-table th, .compare-table td { font-size: 0.9rem; padding: 12px 8px; }
-        .hero-img-badge { position: relative; bottom: 0; left: 0; margin-top: 12px; }
-        .benefit-content h3 { justify-content: center; }
-      }
+        /* カスタムスタイル: ヒーローとCTAの背景画像オーバーレイ用 */
+        .hero-bg {
+            background-image: url('https://placehold.co/1920x800/e0f2fe/a3a3a3?text=+');
+            background-size: cover;
+            background-position: center;
+        }
+        .cta-bg {
+            background-image: url('https://placehold.co/1920x400/1e293b/ffffff?text=+');
+            background-size: cover;
+            background-position: center;
+            position: relative;
+        }
+        .cta-bg::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0, 0, 0, 0.4);
+            z-index: 0;
+        }
+        .cta-content {
+            position: relative;
+            z-index: 1;
+        }
     </style>
-  </head>
-  <body>
-    <!-- ヘッダー -->
-    <header class="topbar">
-      <div class="container topbar-inner">
-        <div class="brand">
-          <div class="brand-mark">
-            <img src="../common/logo_square.jpg" alt="小松Smart自治PJ" />
-          </div>
-          <span>小松 Smart自治PJ</span>
+</head>
+<body class="font-sans text-gray-800 bg-white">
+
+    <header class="fixed top-0 w-full bg-white/90 backdrop-blur-sm shadow-sm z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-20">
+                <!-- ロゴ -->
+                <div class="flex items-center gap-3">
+                    <img src="https://placehold.co/50x50/0097a7/ffffff?text=Logo" alt="Logo" class="w-10 h-10 rounded-full">
+                    <div>
+                        <h1 class="text-xl font-bold text-brand-blue leading-tight">小松 Smart自治PJ (KSL)</h1>
+                        <p class="text-[10px] text-gray-500 font-medium">Komatsu Smart Local Project</p>
+                    </div>
+                </div>
+
+                <!-- センターナビ -->
+                <nav class="hidden lg:flex space-x-8">
+                    <a href="#" class="text-gray-600 hover:text-brand-blue font-bold text-sm border-b-2 border-brand-blue">ホーム</a>
+                    <a href="#" class="text-gray-600 hover:text-brand-blue font-bold text-sm">プロジェクトについて</a>
+                    <a href="#" class="text-gray-600 hover:text-brand-blue font-bold text-sm">機能一覧</a>
+                    <a href="#" class="text-gray-600 hover:text-brand-blue font-bold text-sm">技術構成</a>
+                    <a href="#" class="text-gray-600 hover:text-brand-blue font-bold text-sm">オープンソース</a>
+                    <a href="#" class="text-gray-600 hover:text-brand-blue font-bold text-sm">お問い合わせ</a>
+                </nav>
+
+                <!-- 右側ボタン -->
+                <div class="hidden lg:flex items-center gap-4">
+                    <a href="#" class="text-gray-700 hover:text-black font-bold flex items-center gap-2 text-sm">
+                        <i class="fa-brands fa-github text-lg"></i> GitHub
+                    </a>
+                    <a href="#" class="bg-brand-line hover:bg-green-600 text-white px-5 py-2 rounded-full font-bold text-sm flex items-center gap-2 transition-colors">
+                        <i class="fa-brands fa-line text-lg"></i> LINEで相談
+                    </a>
+                </div>
+
+                <!-- モバイルメニューボタン -->
+                <div class="lg:hidden flex items-center">
+                    <button class="text-gray-600 hover:text-gray-900 focus:outline-none">
+                        <i class="fa-solid fa-bars text-2xl"></i>
+                    </button>
+                </div>
+            </div>
         </div>
-        <nav class="nav">
-          <a href="#problem">よくあるお悩み</a>
-          <a href="#solution">できること</a>
-          <a href="#benefits">わくわくポイント</a>
-          <a href="https://lin.ee/UWX833ru" target="_blank" class="nav-cta">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M24 10.304c0-5.369-5.383-9.738-12-9.738-6.616 0-12 4.369-12 9.738 0 4.814 4.269 8.846 10.036 9.608.391.084.922.258 1.057.592.122.303.079.778.039 1.085l-.171 1.027c-.053.303-.242 1.186 1.039.647 1.281-.54 6.911-4.069 9.428-6.967 1.739-1.907 2.572-3.844 2.572-6.002z"/></svg>
-            LINEで質問してみる
-          </a>
-        </nav>
-      </div>
     </header>
 
-    <main>
-      <!-- ファーストビュー（FV） -->
-      <section class="hero">
-        <div class="container hero-grid">
-          <div>
-            <div class="eyebrow">✨ 役員さんも住民さんも笑顔になれる！</div>
-            <h1>
-              めんどくさい紙の手間が<br />
-              スマホで<span class="highlight">「ゼロ」</span>になる！<br />
-              未来のたのしい町内会づくり
-            </h1>
-            <p class="lead">
-              難しいシステムは一切不要！<br />
-              住民のみなさんは、いつもの「LINE」をポチポチ押すだけ！<br />
-              役員さんの集計作業は、自動でらくらく完了します♪
-            </p>
-            <div>
-              <a href="https://lin.ee/UWX833ru" target="_blank" class="btn-line">
-                <svg width="28" height="28" viewBox="0 0 24 24" fill="white"><path d="M24 10.304c0-5.369-5.383-9.738-12-9.738-6.616 0-12 4.369-12 9.738 0 4.814 4.269 8.846 10.036 9.608.391.084.922.258 1.057.592.122.303.079.778.039 1.085l-.171 1.027c-.053.303-.242 1.186 1.039.647 1.281-.54 6.911-4.069 9.428-6.967 1.739-1.907 2.572-3.844 2.572-6.002z"/></svg>
-                公式LINEで友だち追加・相談する
-              </a>
+    <main class="pt-20">
+        <section class="hero-bg relative pt-16 pb-24 overflow-hidden">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+                <div class="w-full lg:w-3/5">
+                    <!-- キャッチコピー -->
+                    <h2 class="text-4xl md:text-5xl lg:text-6xl font-black leading-tight text-brand-blue tracking-tight mb-4">
+                        紙の回覧板から、<br>
+                        <span class="text-brand-green">持続可能な地域の未来へ。</span>
+                    </h2>
+                    
+                    <!-- サブコピー -->
+                    <p class="text-xl md:text-2xl font-bold text-brand-blue mb-6 leading-snug">
+                        サーバー費完全０円で実現する、<br>
+                        新しい「スマート自治」の形。
+                    </p>
+
+                    <!-- 説明文 -->
+                    <p class="text-gray-700 text-base md:text-lg mb-8 leading-relaxed max-w-2xl font-medium">
+                        小松 Smart自治PJ (KSL) は、班長さんの紙配布負担を解消するために<br class="hidden md:block">生まれた地域密着型のオープンソースプロジェクトです。<br>
+                        <span class="font-bold text-brand-blue">GitHub Pages・LINE・Google Workspace</span>を活用し、最大500世帯規模の<br class="hidden md:block">自治会業務を完全無料でデジタル化します。
+                    </p>
+
+                    <!-- バッジ -->
+                    <div class="flex flex-wrap gap-3 mb-10">
+                        <div class="bg-[#22c55e] text-white pl-1.5 pr-4 py-1.5 rounded-full font-bold flex items-center gap-2.5 shadow-sm">
+                            <div class="bg-white text-[#22c55e] w-8 h-8 rounded-full flex items-center justify-center text-sm shrink-0">
+                                <i class="fa-solid fa-yen-sign"></i>
+                            </div>
+                            <div class="text-left text-xs md:text-[13px] leading-tight">
+                                完全無料・<br>サーバー費0円
+                            </div>
+                        </div>
+                        <div class="bg-[#2563eb] text-white pl-3 pr-4 py-1.5 rounded-full font-bold flex items-center gap-2.5 shadow-sm">
+                            <i class="fa-brands fa-github text-[32px] leading-none shrink-0"></i>
+                            <div class="text-left text-xs md:text-[13px] leading-tight">
+                                オープンソース<br>(GitHub公開)
+                            </div>
+                        </div>
+                        <div class="bg-[#8b5cf6] text-white pl-3 pr-4 py-1.5 rounded-full font-bold flex items-center gap-2.5 shadow-sm">
+                            <i class="fa-solid fa-cloud text-[26px] leading-none shrink-0"></i>
+                            <div class="text-left text-xs md:text-[13px] leading-tight">
+                                LINE/LIFF &<br>Google基盤
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- CTAボタン -->
+                    <div class="flex flex-col sm:flex-row gap-4">
+                        <a href="#" class="bg-brand-blue hover:bg-blue-800 text-white px-8 py-4 rounded-full font-bold text-lg flex justify-center items-center gap-3 transition-colors shadow-lg">
+                            <i class="fa-brands fa-github text-2xl"></i> GitHubでコード・導入ガイドを見る <i class="fa-solid fa-arrow-right ml-2 text-sm"></i>
+                        </a>
+                        <a href="#" class="bg-brand-line hover:bg-green-600 text-white px-8 py-4 rounded-full font-bold text-lg flex justify-center items-center gap-3 transition-colors shadow-lg">
+                            <i class="fa-brands fa-line text-2xl"></i> LINEで導入・活用について相談する <i class="fa-solid fa-arrow-right ml-2 text-sm"></i>
+                        </a>
+                    </div>
+                </div>
             </div>
-            <div class="hero-badges">
-              <span class="badge">👍 スマホでかんたん</span>
-              <span class="badge">🧡 LINEで届く・答える</span>
-              <span class="badge">✨ 役員の負担を劇的カット</span>
+            <!-- 右側のイメージ配置（プレースホルダー） -->
+            <div class="hidden lg:block absolute bottom-0 right-0 w-2/5 h-full z-0">
+                <img src="https://placehold.co/800x600/transparent/0056b3?text=Illustration+Area" alt="Hero Illustration" class="object-contain object-bottom w-full h-full opacity-50">
             </div>
-          </div>
+        </section>
 
-          <div class="hero-img-box">
-            <img src="https://images.unsplash.com/photo-1517486808906-6ca8b3f04846?auto=format&fit=crop&w=800&q=80" alt="笑顔で会話する地域のみなさん" />
-            <div class="hero-img-badge">
-              🌈 住民のLINE利用率もアップ！
+        <section class="bg-gray-50 py-20 relative overflow-hidden">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <!-- セクションヘッダー -->
+                <div class="flex items-center gap-4 mb-10">
+                    <div class="w-12 h-12 bg-cyan-500 text-white rounded-full flex items-center justify-center font-bold text-2xl shadow-md">02</div>
+                    <div>
+                        <h3 class="text-brand-blue font-bold text-lg">開発の背景とストーリー</h3>
+                        <h2 class="text-3xl md:text-4xl font-bold text-brand-blue mt-1 leading-tight">
+                            何十年も変わらなかった<br>
+                            「班長さんの負担」に、本気で向き合う。
+                        </h2>
+                    </div>
+                </div>
+
+                <div class="flex flex-col lg:flex-row gap-12 items-center">
+                    <!-- 左側画像エリア -->
+                    <div class="w-full lg:w-5/12 relative">
+                        <div class="relative w-72 h-72 md:w-96 md:h-96 mx-auto">
+                            <!-- 丸い画像 -->
+                            <img src="https://placehold.co/500x500/cccccc/666666?text=Background+Image" alt="Background" class="rounded-full w-full h-full object-cover shadow-xl border-4 border-white">
+                            <!-- 装飾点線 -->
+                            <svg class="absolute -top-4 -left-4 w-full h-full" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <circle cx="50" cy="50" r="48" stroke="#0097a7" stroke-width="0.5" stroke-dasharray="2 2" />
+                            </svg>
+                        </div>
+                        <!-- 手書き風テキスト（傾き付き） -->
+                        <div class="absolute bottom-4 right-0 lg:-right-10 bg-white/80 backdrop-blur-sm px-6 py-3 rounded-lg shadow-lg rotate-[-5deg]">
+                            <p class="text-xl font-bold text-gray-800 italic">その負担を、<br>なくしたい。</p>
+                        </div>
+                    </div>
+
+                    <!-- 右側テキストエリア -->
+                    <div class="w-full lg:w-7/12">
+                        <p class="text-gray-700 text-lg leading-loose font-medium space-y-6">
+                            <span class="block">毎月、重い紙の配布物や回覧板を持って一軒一軒配って回るーー。<br>長年続いてきたこの作業は、現代の自治会役員にとってあまりにも大きな負担です。</span>
+                            <span class="block">役員のなり手不足や地域の希薄化が進む中、私たちは「時代に即さない手法を改め、現場の負担を本気でゼロにする」ことを目的に本プロジェクトを始動しました。</span>
+                            <span class="block">単にアプリを入れるのではなく、住民一人ひとりが「デジタル配信を希望し、紙の配布を<span class="text-brand-blue font-bold border-b-2 border-brand-blue pb-1">不要とする意思表示</span>」を行える仕組みを作ることで、真のペーパーレスと持続可能な町内会運営を実現します。</span>
+                        </p>
+                    </div>
+                </div>
             </div>
-          </div>
-        </div>
-      </section>
+        </section>
 
-      <!-- お悩み・共感セクション -->
-      <section id="problem" class="problem-section">
-        <div class="container">
-          <div class="section-head">
-            <h2>町内会や自治会の準備、<br />こんなことで大変な思いをしていませんか？</h2>
-            <p>紙と電話に頼る運用は、もうそろそろ卒業しましょう！</p>
-          </div>
+        <section class="bg-white py-20">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <!-- セクションヘッダー -->
+                <div class="flex items-center gap-4 mb-12">
+                    <div class="w-12 h-12 bg-cyan-500 text-white rounded-full flex items-center justify-center font-bold text-2xl shadow-md shrink-0">03</div>
+                    <h2 class="text-2xl md:text-3xl font-bold text-brand-blue leading-tight">
+                        誰もが真似できる。月額コスト<span class="text-brand-cyan text-4xl">０</span>円を可能にするオープンアーキテクチャ。
+                    </h2>
+                </div>
 
-          <div class="problem-flex">
-            <div class="problem-grid">
-              <div class="problem-card">
-                <div class="emo">😭</div>
-                <p>回覧板を回すのが大変…途中で止まってしまったり、全員に届いているか分からない</p>
-              </div>
-              <div class="problem-card">
-                <div class="emo">🌀</div>
-                <p>お祭りや集会の出欠表を集めて、1つずつ手作業で数えるのが本当に面倒…</p>
-              </div>
-              <div class="problem-card">
-                <p class="emo">🏢</p>
-                <p>集会所の予約や鍵の貸し借りが、電話や紙の台帳で二重予約が心配…</p>
-              </div>
-              <div class="problem-card">
-                <p class="emo">💦</p>
-                <p>役員の引き継ぎが大変で「次の役員を引き受けてくれる人がいない」のが一番の悩み…</p>
-              </div>
+                <div class="flex flex-col xl:flex-row gap-8 items-center justify-between">
+                    <!-- フロー図 -->
+                    <div class="w-full xl:w-2/3 flex flex-col md:flex-row items-center justify-between gap-4 md:gap-2">
+                        
+                        <!-- Step 1: LINE -->
+                        <div class="flex flex-col items-center justify-center p-4 min-w-[120px]">
+                            <div class="w-20 h-20 bg-brand-line rounded-2xl flex items-center justify-center text-white text-4xl mb-3 shadow-lg">
+                                <i class="fa-brands fa-line"></i>
+                            </div>
+                            <p class="font-bold text-center text-brand-blue text-lg">LINE<br><span class="text-sm">(LIFF)</span></p>
+                        </div>
+
+                        <i class="fa-solid fa-arrow-right text-brand-cyan text-2xl hidden md:block"></i>
+                        <i class="fa-solid fa-arrow-down text-brand-cyan text-2xl md:hidden"></i>
+
+                        <!-- Step 2: GitHub Pages -->
+                        <div class="bg-blue-50 border border-blue-100 rounded-xl p-6 flex flex-col items-center text-center shadow-sm flex-1 min-h-[180px]">
+                            <i class="fa-brands fa-github text-4xl text-gray-800 mb-3"></i>
+                            <h4 class="font-bold text-brand-blue text-lg mb-1">GitHub Pages<br><span class="text-sm font-normal">(フロントエンド)</span></h4>
+                            <p class="text-sm text-gray-600 mt-2 font-medium">スマホ最適化の<br>1ページ完結Web UI</p>
+                        </div>
+
+                        <i class="fa-solid fa-arrow-right text-brand-cyan text-2xl hidden md:block"></i>
+                        <i class="fa-solid fa-arrow-down text-brand-cyan text-2xl md:hidden"></i>
+
+                        <!-- Step 3: Google Sheets -->
+                        <div class="bg-blue-50 border border-blue-100 rounded-xl p-6 flex flex-col items-center text-center shadow-sm flex-1 min-h-[180px]">
+                            <i class="fa-solid fa-file-excel text-4xl text-green-600 mb-3"></i>
+                            <h4 class="font-bold text-brand-blue text-lg mb-1">Google スプレッドシート<br><span class="text-sm font-normal">(データベース)</span></h4>
+                            <p class="text-sm text-gray-600 mt-2 font-medium">専門知識不要で<br>手動更新が可能</p>
+                        </div>
+
+                        <i class="fa-solid fa-arrow-right text-brand-cyan text-2xl hidden md:block"></i>
+                        <i class="fa-solid fa-arrow-down text-brand-cyan text-2xl md:hidden"></i>
+
+                        <!-- Step 4: GAS -->
+                        <div class="bg-blue-50 border border-blue-100 rounded-xl p-6 flex flex-col items-center text-center shadow-sm flex-1 min-h-[180px]">
+                            <div class="flex gap-1 mb-3">
+                                <i class="fa-solid fa-play text-2xl text-blue-500"></i>
+                                <i class="fa-solid fa-play text-2xl text-red-500"></i>
+                                <i class="fa-solid fa-play text-2xl text-yellow-500"></i>
+                            </div>
+                            <h4 class="font-bold text-brand-blue text-lg mb-1">Google Apps Script<br><span class="text-sm font-normal">(バックエンド)</span></h4>
+                            <p class="text-sm text-gray-600 mt-2 font-medium">ログイン照合・アクセスログ<br>などを安全に処理</p>
+                        </div>
+                    </div>
+
+                    <!-- セキュリティカード -->
+                    <div class="w-full xl:w-1/3 bg-blue-50 rounded-2xl overflow-hidden shadow-md">
+                        <div class="bg-brand-blue text-white p-4 flex items-center gap-3">
+                            <i class="fa-solid fa-shield-halved text-2xl"></i>
+                            <h4 class="font-bold text-lg">安心のアクセス制限</h4>
+                        </div>
+                        <div class="p-6">
+                            <p class="text-gray-700 font-medium leading-relaxed">
+                                名簿データと照合された住民のみがログイン状態で閲覧できる認可構造を採用。いたずら防止やプライバシー保護を徹底しています。
+                            </p>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div>
-              <img src="https://images.unsplash.com/photo-1450133064473-71024230f91b?auto=format&fit=crop&w=800&q=80" alt="書類整理で頭を抱えるイメージ" />
+        </section>
+
+        <section class="bg-[#f0f9f6] py-20 border-t border-b border-gray-100">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <!-- セクションヘッダー -->
+                <div class="flex items-center gap-4 mb-12">
+                    <div class="w-12 h-12 bg-brand-green text-white rounded-full flex items-center justify-center font-bold text-2xl shadow-md shrink-0">04</div>
+                    <h2 class="text-2xl md:text-3xl font-bold text-brand-blue leading-tight">
+                        スマホ1ページで完結。住民も役員も迷わないスマート機能。
+                    </h2>
+                </div>
+
+                <!-- グリッドカード -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    
+                    <!-- Card 1 -->
+                    <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
+                        <div class="flex items-center gap-3 mb-4">
+                            <div class="w-12 h-12 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center text-xl shrink-0">
+                                <i class="fa-regular fa-file-lines"></i>
+                            </div>
+                            <h4 class="font-bold text-brand-blue text-lg leading-tight">電子回覧板＆デジタル配布物</h4>
+                        </div>
+                        <p class="text-gray-600 text-sm font-medium leading-relaxed">
+                            LINEから今月の配布物に直接アクセス。回覧板と広報紙等のPDFをまとめて閲覧。閲覧日時ログも自動保存。
+                        </p>
+                    </div>
+
+                    <!-- Card 2 -->
+                    <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
+                        <div class="flex items-center gap-3 mb-4">
+                            <div class="w-12 h-12 bg-orange-100 text-orange-500 rounded-full flex items-center justify-center text-xl shrink-0">
+                                <i class="fa-solid fa-house"></i>
+                            </div>
+                            <h4 class="font-bold text-brand-blue text-lg leading-tight">公民館・施設予約<br><span class="text-orange-500 text-base">(2タッチ申請)</span></h4>
+                        </div>
+                        <p class="text-gray-600 text-sm font-medium leading-relaxed">
+                            ログイン認証済みだから名前入力不要。日付と部屋を選ぶだけの「2タッチ」で申請完了。管理者はLINEで承認・却下をワンタップ処理。
+                        </p>
+                    </div>
+
+                    <!-- Card 3 -->
+                    <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
+                        <div class="flex items-center gap-3 mb-4">
+                            <div class="w-12 h-12 bg-pink-100 text-pink-500 rounded-full flex items-center justify-center text-xl shrink-0">
+                                <i class="fa-regular fa-calendar-check"></i>
+                            </div>
+                            <h4 class="font-bold text-brand-blue text-lg leading-tight">イベント出欠＆行事回答</h4>
+                        </div>
+                        <p class="text-gray-600 text-sm font-medium leading-relaxed">
+                            質問にスマホからサクッと回答。回答状況はスプレッドシートへ自動反映。手作業の集計苦労を解消。
+                        </p>
+                    </div>
+
+                    <!-- Card 4 -->
+                    <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
+                        <div class="flex items-center gap-3 mb-4">
+                            <div class="w-12 h-12 bg-teal-100 text-teal-600 rounded-full flex items-center justify-center text-xl shrink-0">
+                                <i class="fa-solid fa-helmet-safety"></i>
+                            </div>
+                            <h4 class="font-bold text-brand-blue text-lg leading-tight">災害時安否確認</h4>
+                        </div>
+                        <p class="text-gray-600 text-sm font-medium leading-relaxed">
+                            万一の災害時には「無事」「連絡が必要」を一斉確認、有事の地域防災インフラとして機能。
+                        </p>
+                    </div>
+
+                </div>
             </div>
-          </div>
+        </section>
 
-          <div class="problem-summary">
-            <p>
-              🌟 そのお悩み、すべて『町内会DX』におまかせください！<br />
-              みんなが使っているLINEを活用して、一気に解決します！
-            </p>
-          </div>
-        </div>
-      </section>
+        <section class="bg-white py-20">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <!-- セクションヘッダー -->
+                <div class="flex items-center gap-4 mb-12">
+                    <div class="w-12 h-12 bg-cyan-500 text-white rounded-full flex items-center justify-center font-bold text-2xl shadow-md shrink-0">05</div>
+                    <h2 class="text-2xl md:text-3xl font-bold text-brand-blue leading-tight">
+                        1つの地域から、全国の自治会へ。オープンソースとして知見を<span class="text-brand-cyan">共有</span>。
+                    </h2>
+                </div>
 
-      <!-- 解決策・機能紹介 -->
-      <section id="solution">
-        <div class="container">
-          <div class="section-head">
-            <h2>スマホをポンポン押すだけ！<br />『町内会DX』でできる6つのワクワク</h2>
-            <p>難しい操作は一切ナシ！機械が苦手な方でも安心して使えます。</p>
-          </div>
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-10 items-center">
+                    <!-- 左側テキスト -->
+                    <div class="lg:col-span-1">
+                        <p class="text-gray-700 text-lg leading-loose font-medium">
+                            小松 Smart自治PJは、特定の業者に依存するプロプライエタリなシステムではありません。<br>
+                            ソースコード、スプレッドシートのテンプレート、導入マニュアルはすべて公開されており、全国のエンジニアや自治体が<span class="font-bold text-brand-blue">自由に拝見・複製（Fork）・カスタマイズ</span>できます。<br>
+                            地域の課題を自分たちの手で解決する「シビックテック」の輪を広げ、持続可能な自治体モデルを共創していきます。
+                        </p>
+                    </div>
 
-          <div class="grid-3">
-            <article class="card">
-              <div class="card-img-wrapper">
-                <img src="https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=600&q=80" alt="スマホ操作" />
-              </div>
-              <div class="card-body">
-                <h3>📇 かんたん名簿登録</h3>
-                <p>自分のLINEからサクッと登録！住所変更や連絡先の更新も、スマホでいつでも自分でできます。</p>
-              </div>
-            </article>
+                    <!-- 中央マップ画像（プレースホルダー） -->
+                    <div class="lg:col-span-1 flex justify-center relative">
+                        <img src="https://placehold.co/400x300/transparent/0097a7?text=Map+Illustration" alt="Japan Map" class="w-full max-w-sm">
+                        <div class="absolute bottom-4 right-4 bg-white/80 px-4 py-2 rounded-full shadow-sm font-bold text-brand-blue italic rotate-[-5deg]">
+                            一緒に、全国へ。
+                        </div>
+                    </div>
 
-            <article class="card">
-              <div class="card-img-wrapper">
-                <img src="https://images.unsplash.com/photo-1577563908411-5077b6dc7624?auto=format&fit=crop&w=600&q=80" alt="笑顔でLINEを見る女性" />
-              </div>
-              <div class="card-body">
-                <h3>📢 スマホで届く回覧板</h3>
-                <p>お知らせやおたよりがLINEに自動で届きます。紙を刷ってポストに入れる手間が一切なくなります！</p>
-              </div>
-            </article>
-
-            <article class="card">
-              <div class="card-img-wrapper">
-                <img src="https://images.unsplash.com/photo-1511632765486-a01980e01a18?auto=format&fit=crop&w=600&q=80" alt="地域の集まり・イベント" />
-              </div>
-              <div class="card-body">
-                <h3>⭕ ワンタップ出欠確認</h3>
-                <p>「行く」「行かない」を選ぶだけ！誰が参加するか画面上で自動でまとまるので、集計の苦労ゼロ！</p>
-              </div>
-            </article>
-
-            <article class="card">
-              <div class="card-img-wrapper">
-                <img src="https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=600&q=80" alt="きれいな集会所・会議室" />
-              </div>
-              <div class="card-body">
-                <h3>🔑 集会所のサクサク予約</h3>
-                <p>スマホから「使いたい日」を選んで送信！カレンダーを見ながら空き状況がひと目でわかります。</p>
-              </div>
-            </article>
-
-            <article class="card">
-              <div class="card-img-wrapper">
-                <img src="https://images.unsplash.com/photo-1582213782179-e0d53f98f2ca?auto=format&fit=crop&w=600&q=80" alt="手を取り合う地域の支え合い" />
-              </div>
-              <div class="card-body">
-                <h3>⛑️ いざという時の安否確認</h3>
-                <p>地震や災害が起きた時も、LINEで「無事です！」を一斉送信。みんなの安全がすぐ確認できて安心です。</p>
-              </div>
-            </article>
-
-            <article class="card">
-              <div class="card-img-wrapper">
-                <img src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=600&q=80" alt="和やかに会話する役員チーム" />
-              </div>
-              <div class="card-body">
-                <h3>🎁 引き継ぎも超らくらく</h3>
-                <p>データはGoogleの安全な表（スプレッドシート）に残るので、次の役員さんにボタン1つで交代できます！</p>
-              </div>
-            </article>
-          </div>
-        </div>
-      </section>
-
-      <!-- ワクワクポイント・メリット -->
-      <section id="benefits" class="benefits-section">
-        <div class="container">
-          <div class="section-head">
-            <h2>みんながハッピーになれる<br />『町内会DX』3つの良いところ</h2>
-            <p>地域のつながりが、もっとあたたかく、もっと新しくなります！</p>
-          </div>
-
-          <div class="benefit-box">
-            <div class="benefit-img">
-              <img src="https://images.unsplash.com/photo-1581579438747-1dc8d17bbce4?auto=format&fit=crop&w=600&q=80" alt="シニア層も笑顔でスマホを使う" />
+                    <!-- 右側リスト -->
+                    <div class="lg:col-span-1 space-y-4">
+                        <!-- List Item 1 -->
+                        <div class="flex items-center gap-4 bg-blue-50/50 border border-blue-100 p-4 rounded-xl shadow-sm">
+                            <div class="w-10 h-10 bg-brand-blue text-white rounded-full flex items-center justify-center text-lg shrink-0">
+                                <i class="fa-brands fa-github"></i>
+                            </div>
+                            <span class="font-bold text-brand-blue">ソースコード公開<br><span class="text-xs font-normal">(GitHub)</span></span>
+                        </div>
+                        <!-- List Item 2 -->
+                        <div class="flex items-center gap-4 bg-blue-50/50 border border-blue-100 p-4 rounded-xl shadow-sm">
+                            <div class="w-10 h-10 bg-brand-blue text-white rounded-full flex items-center justify-center text-lg shrink-0">
+                                <i class="fa-regular fa-file-lines"></i>
+                            </div>
+                            <span class="font-bold text-brand-blue">導入マニュアル公開</span>
+                        </div>
+                        <!-- List Item 3 -->
+                        <div class="flex items-center gap-4 bg-blue-50/50 border border-blue-100 p-4 rounded-xl shadow-sm">
+                            <div class="w-10 h-10 bg-brand-green text-white rounded-full flex items-center justify-center text-lg shrink-0">
+                                <i class="fa-solid fa-table-cells"></i>
+                            </div>
+                            <span class="font-bold text-brand-green">スプレッドシートテンプレート公開</span>
+                        </div>
+                        <!-- List Item 4 -->
+                        <div class="flex items-center gap-4 bg-blue-50/50 border border-blue-100 p-4 rounded-xl shadow-sm">
+                            <div class="w-10 h-10 bg-brand-blue text-white rounded-full flex items-center justify-center text-lg shrink-0">
+                                <i class="fa-solid fa-code-branch"></i>
+                            </div>
+                            <span class="font-bold text-brand-blue">自由なカスタマイズ・Fork</span>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="benefit-content">
-              <h3><span class="benefit-badge-mini">POINT 1</span> 高齢者の方でも安心！新しいアプリは不要</h3>
-              <p>家族や友人との連絡で普段から使い慣れている「LINE」をそのまま使うので、説明会をしなくても誰でも迷わず操作できます。</p>
-            </div>
-          </div>
+        </section>
 
-          <div class="benefit-box">
-            <div class="benefit-img">
-              <img src="https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?auto=format&fit=crop&w=600&q=80" alt="電卓とノートで予算に優しい" />
-            </div>
-            <div class="benefit-content">
-              <h3><span class="benefit-badge-mini">POINT 2</span> 無駄なお金がかからない！ずっとやさしい設計</h3>
-              <p>Googleの便利な無料仕組みを活用して組み合わせているため、莫大なシステム開発費や維持費は不要！地域に優しいお値段で始められます。</p>
-            </div>
-          </div>
+        <section class="cta-bg py-20">
+            <div class="cta-content max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <!-- セクションヘッダー -->
+                <div class="flex items-center gap-4 mb-10">
+                    <div class="w-12 h-12 bg-cyan-400 text-white rounded-full flex items-center justify-center font-bold text-2xl shadow-md shrink-0">06</div>
+                    <h2 class="text-2xl md:text-3xl font-bold text-white leading-tight drop-shadow-md">
+                        さあ、一緒に。持続可能な地域のために。
+                    </h2>
+                </div>
 
-          <div class="benefit-box">
-            <div class="benefit-img">
-              <img src="https://images.unsplash.com/photo-1531497865144-0464ef8fb9a9?auto=format&fit=crop&w=600&q=80" alt="笑顔で感謝しあう町内会役員" />
-            </div>
-            <div class="benefit-content">
-              <h3><span class="benefit-badge-mini">POINT 3</span> 役員さんのなり手不足が解消！引き継ぎスムーズ</h3>
-              <p>「役員は大変だからやりたくない…」というイメージがガラリと変わります。面倒な事務作業時間が半分以下になり、みんなが喜んで協力できます。</p>
-            </div>
-          </div>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    
+                    <!-- CTA Card 1 -->
+                    <a href="#" class="bg-white rounded-2xl p-5 flex items-center gap-4 shadow-lg hover:transform hover:-translate-y-1 transition-transform group">
+                        <div class="w-16 h-16 bg-brand-line text-white rounded-full flex items-center justify-center text-3xl shrink-0 shadow-inner group-hover:scale-110 transition-transform">
+                            <i class="fa-brands fa-line"></i>
+                        </div>
+                        <div>
+                            <p class="text-sm font-bold text-gray-600 mb-1">自治会役員・住民の方向け</p>
+                            <h4 class="font-bold text-brand-green text-base">公式LINEで導入・運用について相談する <i class="fa-solid fa-arrow-right text-sm ml-1"></i></h4>
+                        </div>
+                    </a>
 
-          <!-- 比較表 -->
-          <div class="compare-box">
-            <h3>今までのやり方 vs これからの『町内会DX』</h3>
-            <table class="compare-table">
-              <thead>
-                <tr>
-                  <th>やること</th>
-                  <th>今までのやり方（紙・電話）</th>
-                  <th>これからの『町内会DX』</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>お知らせ・回覧</td>
-                  <td>紙を印刷して一軒ずつ配る</td>
-                  <td><strong>LINEで一斉送信！即届く</strong></td>
-                </tr>
-                <tr>
-                  <td>出欠・アンケート</td>
-                  <td>回収して夜遅くまで集計</td>
-                  <td><strong>スマホで回答。勝手に自動集計</strong></td>
-                </tr>
-                <tr>
-                  <td>もしもの安否確認</td>
-                  <td>連絡網で1件ずつ電話</td>
-                  <td><strong>ボタン1つで一斉に安全確認</strong></td>
-                </tr>
-                <tr>
-                  <td>役員の引き継ぎ</td>
-                  <td>段ボールいっぱいの紙資料</td>
-                  <td><strong>スマホとパソコンの画面を渡すだけ</strong></td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </section>
+                    <!-- CTA Card 2 -->
+                    <a href="#" class="bg-white rounded-2xl p-5 flex items-center gap-4 shadow-lg hover:transform hover:-translate-y-1 transition-transform group">
+                        <div class="w-16 h-16 bg-brand-blue text-white rounded-full flex items-center justify-center text-2xl shrink-0 shadow-inner group-hover:scale-110 transition-transform">
+                            <i class="fa-solid fa-file-pdf"></i>
+                        </div>
+                        <div>
+                            <p class="text-sm font-bold text-gray-600 mb-1">行政・自治体関係者の方向け</p>
+                            <h4 class="font-bold text-brand-blue text-base">システム全容レポート・導入提案資料(PDF)を見る <i class="fa-solid fa-arrow-right text-sm ml-1"></i></h4>
+                        </div>
+                    </a>
 
-      <!-- 限定枠 -->
-      <section class="limited-section">
-        <div class="container">
-          <div class="limited-card">
-            <span class="limited-badge">🌟 毎月 5団体様 限定サポート</span>
-            <h3>新体制への交代のタイミングである「今」がチャンス！</h3>
-            <p>
-              「大変な紙の作業」をそのまま次の役員さんに引き継ぐのは、もう終わりにしませんか？<br />
-              ていねいな導入サポートをお届けするため、毎月【5団体様限定】でLINEご相談をお受けしております。<br />
-              ぜひお早めにお問い合わせください！
-            </p>
-          </div>
-        </div>
-      </section>
+                    <!-- CTA Card 3 -->
+                    <a href="#" class="bg-white rounded-2xl p-5 flex items-center gap-4 shadow-lg hover:transform hover:-translate-y-1 transition-transform group">
+                        <div class="w-16 h-16 bg-purple-600 text-white rounded-full flex items-center justify-center text-3xl shrink-0 shadow-inner group-hover:scale-110 transition-transform">
+                            <i class="fa-brands fa-github"></i>
+                        </div>
+                        <div>
+                            <p class="text-sm font-bold text-gray-600 mb-1">エンジニア・シビックテックの方向け</p>
+                            <h4 class="font-bold text-purple-700 text-base">GitHubリポジトリ (ソースコード・README) を見る <i class="fa-solid fa-arrow-right text-sm ml-1"></i></h4>
+                        </div>
+                    </a>
 
-      <!-- CTA・公式LINE案内 -->
-      <section id="contact" class="cta-section">
-        <div class="container">
-          <div class="cta-panel">
-            <div class="cta-head">
-              <h2>地域の未来を、もっと明るく便利に！<br />まずはお気軽に公式LINEでご相談ください</h2>
-              <p>
-                「うちの地域でも使えるかしら？」「どんな準備が必要？」など、<br />
-                どんな小さなことでも専門スタッフがやさしくお答えします♪
-              </p>
+                </div>
             </div>
-
-            <div class="cta-line-card">
-              <h3>💬 公式LINEからかんたん問い合わせ</h3>
-              <p>下のボタンを押して「友だち追加」をするだけで、いつでも気軽に質問できます！</p>
-              <a href="https://lin.ee/UWX833ru" target="_blank" class="btn-line">
-                <svg width="28" height="28" viewBox="0 0 24 24" fill="white"><path d="M24 10.304c0-5.369-5.383-9.738-12-9.738-6.616 0-12 4.369-12 9.738 0 4.814 4.269 8.846 10.036 9.608.391.084.922.258 1.057.592.122.303.079.778.039 1.085l-.171 1.027c-.053.303-.242 1.186 1.039.647 1.281-.54 6.911-4.069 9.428-6.967 1.739-1.907 2.572-3.844 2.572-6.002z"/></svg>
-                町内会DX 公式LINEを友だち追加する
-              </a>
-            </div>
-          </div>
-        </div>
-      </section>
+        </section>
     </main>
 
-    <footer>
-      <div class="container">
-        © 2026 町内会DX / スマホでらくらく！新しい地域のカタチ
-      </div>
+    <footer class="bg-brand-dark text-white pt-16 pb-8 border-t-4 border-brand-cyan">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex flex-col md:flex-row justify-between items-center gap-8 mb-12">
+                
+                <!-- フッターロゴ -->
+                <div class="flex items-center gap-3">
+                    <img src="https://placehold.co/40x40/0097a7/ffffff?text=Logo" alt="Logo" class="w-10 h-10 rounded-full">
+                    <div>
+                        <h2 class="text-lg font-bold leading-tight">小松 Smart自治PJ (KSL)</h2>
+                        <p class="text-xs text-gray-400">Komatsu Smart Local Project</p>
+                    </div>
+                </div>
+
+                <!-- フッターナビ -->
+                <nav class="flex flex-wrap justify-center md:justify-end gap-x-8 gap-y-4 text-sm text-gray-300 font-medium">
+                    <a href="#" class="hover:text-white transition-colors">ホーム</a>
+                    <a href="#" class="hover:text-white transition-colors">プロジェクトについて</a>
+                    <a href="#" class="hover:text-white transition-colors">機能一覧</a>
+                    <a href="#" class="hover:text-white transition-colors">技術構成</a>
+                    <a href="#" class="hover:text-white transition-colors">オープンソース</a>
+                    <a href="#" class="hover:text-white transition-colors">お問い合わせ</a>
+                </nav>
+
+            </div>
+
+            <!-- コピーライト -->
+            <div class="border-t border-gray-700 pt-8 w-full">
+                <div class="text-sm text-gray-400 text-center">
+                    &copy; 2026 小松 Smart自治PJ (Komatsu Smart Local Project) / Developed for Sustainable Local Community
+                </div>
+            </div>
+        </div>
     </footer>
-  </body>
+
+</body>
 </html>
