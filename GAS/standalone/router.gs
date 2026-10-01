@@ -93,7 +93,12 @@ function routeGet(action, e) {
 
     case "get_monthly_items":
       return okResponse(action, {
-        items: handleGetMonthlyItems({ ym: p.ym || "" })
+        items: handleGetMonthlyItems({
+          ym: p.ym || "",
+          userId: p.user_id || p.uid || "",
+          displayName: p.display_name || "",
+          pictureUrl: p.picture_url || ""
+        })
       }, callback);
 
     case "notice_bootstrap":

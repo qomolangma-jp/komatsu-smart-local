@@ -70,7 +70,8 @@
 ### 1. 住民名簿登録 & 認証機能 (`member.gs`)
 - **ログイン必須の認可構造**: いたずら防止および個人情報保護のため、全機能はスプレッドシート上の「住民名簿」データとLINE IDの照合により承認されたユーザー（`app` 状態）のみアクセス可能。
 - **デジタル受取意思表示フラグ (`is_digital`)**: 住民が「デジタルで情報を受け取り、紙の配布を不要とする」意思表示を明示する項目。このフラグにより、班長による紙の配布停止を判断します。
-- **保存項目**: `created_at`, `line_id`, `line_name`, `name_1st`, `name_2nd`, `kana_1st`, `kana_2nd`, `group` (班番号), `address`, `is_digital`, `role`, `other`, `status`, `updated_at`
+- **保存項目**: `created_at`, `line_id`, `line_name`, `name_1st`, `name_2nd`, `kana_1st`, `kana_2nd`, `group` (班番号), `address`, `is_digital`, `role`, `other`, `status`, `can_view_notice`, `updated_at`
+- **回覧板閲覧許可**: `users`タブに`can_view_notice`列を追加し、`TRUE`または`1`を設定した登録済みユーザーだけが回覧板を閲覧できます。配布物は公開情報として表示されます。
 
 ### 2. 電子回覧板 & デジタル配布物 (`notice.gs`)
 - **スマホ特化 1ページ統合UI**: 回覧板と配布物（市の広報誌、保健所チラシ、町内ニュース等）を同一ページ内でセクション分けしてまとめて表示。
@@ -101,7 +102,7 @@
 
 | プロパティ名 | 設定シート | 主な役割・保持データ |
 |---|---|---|
-| `SS_MEMBER_ID` | 住民名簿 | LINE ID、氏名、班番号、デジタル受取希望フラグ、ステータス |
+| `SS_MEMBER_ID` | 住民名簿 | LINE ID、氏名、班番号、デジタル受取希望フラグ、ステータス、回覧板閲覧許可（`can_view_notice`） |
 | `SS_NOTICE_ID` | 回覧板・配布物 | 月別コンテンツリスト（`monthly_items`）、閲覧ログ（`access_log_raw`） |
 | `SS_BOOKROOM_ID` | 施設予約 | 予約一覧（`booklist`：日時、部屋、予約ステータス、batch_id） |
 | `SS_ATTENDANCE_ID` | 出欠確認 | 質問マスター（`questions`）、住民回答結果（`answers`） |

@@ -139,6 +139,10 @@
 						<p id="currentMonthLabel" class="text-lg font-bold text-brand-700 mt-1">-</p>
 					</article>
 
+					<p id="noticeAccessMessage" class="hidden rounded-xl border border-amber-200 bg-amber-50 p-3 text-xs leading-relaxed text-amber-800">
+						回覧板は、町内会名簿に登録され、閲覧許可が設定された方のみご覧いただけます。配布物は公開情報としてご覧いただけます。
+					</p>
+
 					<section id="noticeSection" class="space-y-2">
 						<h3 class="text-sm font-bold text-slate-800 flex items-center gap-2">
 							<span class="text-base">📌</span> 回覧板
@@ -227,8 +231,10 @@
 			userAvatar: document.getElementById('userAvatar'),
 			userName: document.getElementById('userName'),
 			currentMonthLabel: document.getElementById('currentMonthLabel'),
+			noticeSection: document.getElementById('noticeSection'),
 			noticeList: document.getElementById('noticeList'),
 			distributionList: document.getElementById('distributionList'),
+			noticeAccessMessage: document.getElementById('noticeAccessMessage'),
 			canvasCurrent: document.getElementById('canvasCurrent'),
 			canvasArchive: document.getElementById('canvasArchive'),
 			archiveMonthSelect: document.getElementById('archiveMonthSelect'),
@@ -543,6 +549,7 @@
 			return {
 				isRegistered: normalized.isRegistered !== undefined ? normalized.isRegistered : status !== 'not_registered',
 				status,
+				canViewNotice: normalized.canViewNotice === true || (data && data.can_view_notice === true),
 				memberName: normalized.fullName || (data && (data.member_name || data.display_name)) || profile.displayName || '町民',
 				group: normalized.group || (data && (data.group || data.group_name)) || '',
 				registerFormUrl: normalized.registerFormUrl || (data && data.register_form_url) || REGISTER_FORM_URL
@@ -556,6 +563,7 @@
 					return {
 						isRegistered: false,
 						status: 'not_registered',
+						canViewNotice: false,
 						memberName: '未登録ユーザー',
 						registerFormUrl: REGISTER_FORM_URL
 					};
@@ -564,6 +572,7 @@
 					return {
 						isRegistered: true,
 						status: 'suspended',
+						canViewNotice: false,
 						memberName: '利用制限ユーザー',
 						registerFormUrl: REGISTER_FORM_URL
 					};
@@ -571,6 +580,7 @@
 				return {
 					isRegistered: true,
 					status: 'ok',
+					canViewNotice: true,
 					memberName: 'DX町内会 テスト住民',
 					registerFormUrl: REGISTER_FORM_URL
 				};
@@ -725,8 +735,11 @@
 		function renderCurrentItems(items, ym) {
 			const notices = items.filter((item) => classifyItem(item.type) === 'notice');
 			const distributions = items.filter((item) => classifyItem(item.type) === 'distribution');
+			const canViewNotice = state.member && state.member.canViewNotice === true;
 
 			el.currentMonthLabel.textContent = formatYmToJa(ym);
+			el.noticeSection.classList.toggle('hidden', !canViewNotice);
+			el.noticeAccessMessage.classList.toggle('hidden', canViewNotice);
 			if (notices.length === 0) {
 				renderEmpty(el.noticeList, '今月の回覧板はありません');
 			} else {
@@ -989,15 +1002,6 @@
 				el.userName.textContent = state.member.memberName;
 				el.userAvatar.src = state.profile.pictureUrl || 'https://placehold.jp/96x96.png';
 				el.registerLink.href = state.member.registerFormUrl || REGISTER_FORM_URL;
-
-				if (!state.member.isRegistered || state.member.status === 'not_registered') {
-					switchMainState('not_registered');
-					return;
-				}
-				if (state.member.status === 'suspended') {
-					switchMainState('suspended');
-					return;
-				}
 
 				setLoadingMessage('今月の回覧データを取得中...');
 				renderCurrentItems(state.currentItems, ym);

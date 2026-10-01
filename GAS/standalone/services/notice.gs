@@ -1,12 +1,13 @@
 function handleGetMonthlyItems(input) {
-  var ym = String(input.ym || "").trim();
+  var req = input || {};
+  var ym = String(req.ym || "").trim();
   if (!/^\d{4}-\d{2}$/.test(ym)) {
     ym = Utilities.formatDate(new Date(), "JST", "yyyy-MM");
   }
   var cacheKey = "notice_monthly_items_v1_" + ym;
   var cached = cacheGetJson(cacheKey);
   if (cached && Array.isArray(cached)) {
-    return cached;
+    return filterMonthlyItemsForViewer(cached, req);
   }
 
   var ymSlash = ym.replace("-", "/");
@@ -40,7 +41,35 @@ function handleGetMonthlyItems(input) {
 
   out.sort(function (a, b) { return a.ymd < b.ymd ? 1 : -1; });
   cachePutJson(cacheKey, out, 180);
-  return out;
+  return filterMonthlyItemsForViewer(out, req);
+}
+
+function filterMonthlyItemsForViewer(items, input) {
+  var req = input || {};
+  var member = null;
+  if (req.userId) {
+    member = handleMemberCheckCached({
+      userId: req.userId,
+      displayName: req.displayName || "",
+      pictureUrl: req.pictureUrl || ""
+    });
+  }
+
+  var canViewNotice = !!(
+    member &&
+    member.isRegistered === true &&
+    member.status === "ok" &&
+    member.canViewNotice === true
+  );
+
+  return (Array.isArray(items) ? items : []).filter(function (item) {
+    return isPublicDistributionItem(item) || canViewNotice;
+  });
+}
+
+function isPublicDistributionItem(item) {
+  var type = String(item && item.type || "").trim().toLowerCase();
+  return type === "distribution" || type.indexOf("配布") >= 0;
 }
 
 function handleNoticeBootstrap(input) {
@@ -56,10 +85,12 @@ function handleNoticeBootstrap(input) {
     pictureUrl: req.pictureUrl || ""
   });
 
-  var items = [];
-  if (member && member.status !== "not_registered" && member.status !== "suspended") {
-    items = handleGetMonthlyItems({ ym: ym });
-  }
+  var items = handleGetMonthlyItems({
+    ym: ym,
+    userId: req.userId || "",
+    displayName: req.displayName || "",
+    pictureUrl: req.pictureUrl || ""
+  });
 
   return {
     ym: ym,

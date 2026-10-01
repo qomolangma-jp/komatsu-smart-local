@@ -24,6 +24,7 @@ function handleMemberCheck(input) {
   var fnCol = headers["name_1st"];
   var statusCol = headers["status"];
   var groupCol = headers["group"];
+  var noticeAccessCol = headers["can_view_notice"];
 
   if (idCol === undefined) {
     return {
@@ -54,14 +55,21 @@ function handleMemberCheck(input) {
   var fullName = ((lnCol !== undefined ? row[lnCol] : "") + " " + (fnCol !== undefined ? row[fnCol] : "")).trim();
   var status = (statusCol !== undefined ? String(row[statusCol] || "") : "OK").trim().toLowerCase();
   var groupValue = groupCol !== undefined ? String(row[groupCol] || "").trim() : "";
+  var canViewNotice = noticeAccessCol !== undefined && isEnabledMemberFlag(row[noticeAccessCol]);
 
   return {
     isRegistered: true,
     fullName: fullName || (input.displayName || "町民"),
     group: groupValue,
     status: status === "ng" ? "suspended" : "ok",
+    canViewNotice: canViewNotice,
     registerFormUrl: APP_CONFIG.registration.formUrl
   };
+}
+
+function isEnabledMemberFlag(value) {
+  var normalized = String(value === null || value === undefined ? "" : value).trim().toLowerCase();
+  return ["true", "1", "yes", "y", "on", "許可", "可", "閲覧可"].indexOf(normalized) >= 0;
 }
 
 function handleMemberCheckCached(input) {
