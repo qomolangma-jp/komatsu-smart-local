@@ -140,7 +140,7 @@
 					</article>
 
 					<p id="noticeAccessMessage" class="hidden rounded-xl border border-amber-200 bg-amber-50 p-3 text-xs leading-relaxed text-amber-800">
-						回覧板は、町内会名簿に登録され、閲覧許可が設定された方のみご覧いただけます。配布物は公開情報としてご覧いただけます。
+						回覧板の閲覧権限がありません。町内会名簿への登録と、管理者による閲覧許可が必要です。配布物は公開情報としてご覧いただけます。
 					</p>
 
 					<section id="noticeSection" class="space-y-2">
@@ -741,7 +741,7 @@
 			el.noticeSection.classList.toggle('hidden', !canViewNotice);
 			el.noticeAccessMessage.classList.toggle('hidden', canViewNotice);
 			if (notices.length === 0) {
-				renderEmpty(el.noticeList, '今月の回覧板はありません');
+				renderEmpty(el.noticeList, canViewNotice ? '今月の回覧板はありません' : '回覧板の閲覧権限がありません');
 			} else {
 				el.noticeList.innerHTML = notices.map((item) => createItemCard(item)).join('');
 			}
