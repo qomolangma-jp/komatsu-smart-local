@@ -112,6 +112,87 @@ function handleClientLog(payload) {
   return { status: "success" };
 }
 
+function handleSafetyCheckLineMessage(payload) {
+  var data = payload || {};
+  var eventId = String(data.eventId || "").trim();
+
+  if (eventId && hasSafetyCheckLineEvent(eventId)) {
+    recordWebhookDiagnostic("info", "safety_check.duplicate", "Duplicate safety check message skipped", {
+      event_id: eventId,
+      user_id: String(data.userId || "")
+    });
+    return { status: "duplicate" };
+  }
+
+  var member = handleMemberCheck({
+    userId: data.userId || "",
+    displayName: data.lineName || ""
+  });
+  var targetMonth = Utilities.formatDate(
+    data.timestamp ? new Date(data.timestamp) : new Date(),
+    "JST",
+    "yyyy-MM"
+  );
+
+  var result = handleClientLog({
+    user_id: data.userId || "",
+    user_name: member.fullName || data.userName || data.lineName || "",
+    group: member.group || "",
+    target_month: targetMonth,
+    action_type: "safety_check_message",
+    item_label: "[安否]確認",
+    url: "LINE",
+    meta: {
+      event_id: eventId,
+      answer_status: "確認済み",
+      source: "line_rich_menu",
+      message: data.message || "[安否]確認",
+      line_name: data.lineName || "",
+      received_at: data.timestamp || new Date()
+    }
+  });
+
+  recordWebhookDiagnostic("info", "safety_check.saved", "Safety check message saved", {
+    event_id: eventId,
+    user_id: String(data.userId || ""),
+    status: member.status || "not_registered"
+  });
+  return result;
+}
+
+function hasSafetyCheckLineEvent(eventId) {
+  var sheet = getOrCreateSheet(
+    APP_CONFIG.spreadsheets.notice,
+    APP_CONFIG.sheets.auditLog,
+    [
+      "timestamp",
+      "user_id",
+      "user_name",
+      "group",
+      "target_month",
+      "action_type",
+      "item_label",
+      "url",
+      "meta"
+    ]
+  );
+  var values = sheet.getDataRange().getDisplayValues();
+  if (values.length <= 1) return false;
+
+  var headers = buildHeaderIndexMap(values[0]);
+  var actionCol = headers["action_type"];
+  var metaCol = headers["meta"];
+  if (actionCol === undefined || metaCol === undefined) return false;
+
+  for (var i = values.length - 1; i > 0; i--) {
+    if (String(values[i][actionCol] || "").trim() !== "safety_check_message") continue;
+    if (String(values[i][metaCol] || "").indexOf('"event_id":"' + eventId + '"') >= 0) {
+      return true;
+    }
+  }
+  return false;
+}
+
 function updateMemberLastSeen(data) {
   try {
     var userId = String(data.user_id || "").trim();
