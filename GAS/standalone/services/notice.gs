@@ -157,6 +157,12 @@ function handleSafetyCheckLineMessage(payload) {
     user_id: String(data.userId || ""),
     status: member.status || "not_registered"
   });
+
+  result.isRegistered = member.isRegistered === true;
+  result.memberStatus = member.status || "not_registered";
+  result.userName = member.fullName || data.userName || data.lineName || "";
+  result.group = member.group || "";
+  result.registerFormUrl = member.registerFormUrl || APP_CONFIG.registration.formUrl || "";
   return result;
 }
 

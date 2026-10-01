@@ -47,7 +47,7 @@ function handleLineWebhook(events, options) {
           });
 
           if (safetyCheckResult && safetyCheckResult.status === "success") {
-            sendSafetyCheckReply(event.replyToken, lineName || memberName || "ご利用者");
+            sendSafetyCheckReply(event.replyToken, safetyCheckResult);
           }
         }
 
@@ -149,7 +149,7 @@ function isSafetyCheckMessage(text) {
   return String(text || "").replace(/[\s\u3000]/g, "") === "[安否]確認";
 }
 
-function sendSafetyCheckReply(replyToken, displayName) {
+function sendSafetyCheckReply(replyToken, safetyCheckResult) {
   var token = APP_CONFIG.line && APP_CONFIG.line.channelAccessToken
     ? String(APP_CONFIG.line.channelAccessToken).trim()
     : "";
@@ -163,8 +163,19 @@ function sendSafetyCheckReply(replyToken, displayName) {
     return;
   }
 
-  var name = String(displayName || "ご利用者").trim();
-  var message = name + "さん\n\n安否確認のご連絡を受け付けました。\n送信時刻とLINEアカウントを記録しています。\n\nご無事の場合は、このままで大丈夫です。\nお困りの場合は、町内会役員へ直接ご連絡ください。";
+  var result = safetyCheckResult || {};
+  var name = String(result.userName || "ご利用者").trim();
+  var message;
+
+  if (result.isRegistered !== true) {
+    var registerUrl = String(result.registerFormUrl || "").trim();
+    message = "安否確認のご連絡を受け付けました。\n\nただし、現在LINEの住民登録が確認できません。\nお名前や班の情報がないため、誰の安否確認か正しく紐付けて保管できません。\n\n次の登録フォームから、お名前と班を登録してください。";
+    if (registerUrl) {
+      message += "\n\n登録フォーム:\n" + registerUrl;
+    }
+  } else {
+    message = name + "さん\n\n安否確認のご連絡を受け付けました。\n送信時刻とLINEアカウントを記録しています。\n\nご無事の場合は、このままで大丈夫です。\nお困りの場合は、町内会役員へ直接ご連絡ください。";
+  }
 
   try {
     var response = UrlFetchApp.fetch("https://api.line.me/v2/bot/message/reply", {
