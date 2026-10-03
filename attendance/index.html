@@ -229,20 +229,23 @@
     // ==========================================
 
     let userProfile = {};
-    const eventId = new URLSearchParams(window.location.search).get("q") || "";
+    let eventId = "";
     const answerOptions = ["出席", "欠席", "未定"];
     const loading = document.getElementById("loading");
 
     window.onload = function() {
-      if (!eventId.trim()) {
-        loading.textContent = "イベントIDがありません。イベントの回答リンクから開いてください。";
-        return;
-      }
-
       liff.init({ liffId: LIFF_ID })
         .then(() => {
+          eventId = getEventId();
+          if (!eventId) {
+            loading.textContent = "イベントIDがありません。イベントの回答リンクから開いてください。";
+            return null;
+          }
+
           if (!liff.isLoggedIn()) {
-            liff.login();
+            const redirectUrl = new URL(window.location.href);
+            redirectUrl.searchParams.set("q", eventId);
+            liff.login({ redirectUri: redirectUrl.toString() });
             return null;
           }
           return liff.getProfile();
@@ -257,6 +260,20 @@
           loading.textContent = "エラーが発生しました。LINEアプリから開き直してください。";
         });
     };
+
+    function getEventId() {
+      const currentParams = new URLSearchParams(window.location.search);
+      const directEventId = currentParams.get("q");
+      if (directEventId) return directEventId.trim();
+
+      const liffState = typeof liff.state === "string"
+        ? liff.state
+        : (currentParams.get("liff.state") || "");
+      if (!liffState) return "";
+
+      const stateUrl = new URL(liffState, window.location.origin);
+      return (stateUrl.searchParams.get("q") || "").trim();
+    }
 
     function loadEvent() {
       const requestUrl = new URL(GAS_API_URL);
