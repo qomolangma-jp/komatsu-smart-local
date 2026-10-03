@@ -48,7 +48,7 @@ var APP_CONFIG = (function buildConfig() {
       apiAuditLog: get("SHEET_API_AUDIT_LOG", "access_api_log"),
       memberLastSeen: get("SHEET_MEMBER_LAST_SEEN", "member_last_seen"),
       summaryMonthly: get("SHEET_SUMMARY_MONTHLY", "summary_monthly"),
-      attendanceQuestions: get("SHEET_ATTENDANCE_QUESTIONS", "questions"),
+      attendanceEvents: get("SHEET_ATTENDANCE_EVENTS", "events"),
       attendanceAnswers: get("SHEET_ATTENDANCE_ANSWERS", "answers"),
       safetyCheckSettings: get("SHEET_SAFETY_CHECK_SETTINGS", "survey_settings"),
       safetyCheckResponses: get("SHEET_SAFETY_CHECK_RESPONSES", "survey_responses"),

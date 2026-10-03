@@ -106,6 +106,21 @@
       white-space: pre-wrap;
     }
 
+    .event-meta {
+      display: grid;
+      gap: 8px;
+      margin: -8px 0 20px;
+      color: var(--text-sub);
+      font-size: 14px;
+    }
+
+    .event-meta-row {
+      display: grid;
+      grid-template-columns: 5em 1fr;
+      gap: 8px;
+      line-height: 1.5;
+    }
+
     /* 選択肢（ラジオボタン） */
     .radio-group {
       display: flex;
@@ -183,6 +198,11 @@
 
     <div id="form-container" class="content-box" style="display: none;">
       <div id="q-title" class="question-title"></div>
+      <div class="event-meta">
+        <div class="event-meta-row"><strong>日時</strong><span id="event-datetime"></span></div>
+        <div class="event-meta-row"><strong>場所</strong><span id="event-location"></span></div>
+        <div class="event-meta-row" id="deadline-row" style="display: none;"><strong>回答期限</strong><span id="event-deadline"></span></div>
+      </div>
       <div id="q-text" class="question-text"></div>
       
       <form id="attendance-form">
@@ -209,136 +229,126 @@
     // ==========================================
 
     let userProfile = {};
-    // --- ここを追加！：URLパラメータから qid を取得 ---
-    const urlParams = new URLSearchParams(window.location.search);
-    const QID = urlParams.get('q') || "q_1"; // ?q=○○ が無い場合はデフォルトで q_1
-    // ------------------------------------------------    
+    const eventId = new URLSearchParams(window.location.search).get("q") || "";
+    const answerOptions = ["出席", "欠席", "未定"];
+    const loading = document.getElementById("loading");
 
     window.onload = function() {
-      // 1. LIFF初期化
+      if (!eventId.trim()) {
+        loading.textContent = "イベントIDがありません。イベントの回答リンクから開いてください。";
+        return;
+      }
+
       liff.init({ liffId: LIFF_ID })
         .then(() => {
           if (!liff.isLoggedIn()) {
             liff.login();
-          } else {
-            return liff.getProfile();
+            return null;
           }
+          return liff.getProfile();
         })
         .then(profile => {
-          if (profile) {
-            userProfile = profile;
-            loadQuestion(); // プロフィール取得後にGASから設問を取得
-          }
+          if (!profile) return;
+          userProfile = profile;
+          return loadEvent();
         })
-        .catch(err => {
-          console.error("LIFF init failed:", err);
-          document.getElementById('loading').textContent = "エラーが発生しました。LINEアプリから開き直してください。";
+        .catch(error => {
+          console.error("LIFF init failed:", error);
+          loading.textContent = "エラーが発生しました。LINEアプリから開き直してください。";
         });
     };
 
-    // 2. GASから設問データを取得 (GETリクエスト)
-    function loadQuestion() {
-    // 開発中のデバッグ用：URLをコンソールに表示
-    const requestUrl = `${GAS_API_URL}?uid=${userProfile.userId}&qid=${QID}`;
-    console.log("Fetching from:", requestUrl);
-    
-    fetch(requestUrl)
+    function loadEvent() {
+      const requestUrl = new URL(GAS_API_URL);
+      requestUrl.searchParams.set("action", "attendance_question");
+      requestUrl.searchParams.set("qid", eventId);
+      requestUrl.searchParams.set("uid", userProfile.userId);
+
+      return fetch(requestUrl)
         .then(response => response.json())
-        .then(res => {
-              if (res.error) {
-                document.getElementById('loading').innerHTML = `<p style="color:red; font-weight:bold;">${res.message}</p>`;
-                return;
-              }
-              
-              document.getElementById('q-title').textContent = res.title;
-              document.getElementById('q-text').textContent = res.text;
-              
-              const radioContainer = document.getElementById('radio-buttons');
-              radioContainer.innerHTML = '';
-              
-              if (res.selections && Array.isArray(res.selections)) {
-                res.selections.forEach((sel) => {
-                  const label = document.createElement('label');
-                  label.className = 'radio-label';
-                  
-                  // ★追加：過去の回答(res.previousAnswer)と一致したらチェックを入れる
-                  const isChecked = (sel === res.previousAnswer) ? "checked" : "";
-                  label.innerHTML = `<input type="radio" name="q1_answer" value="${sel}" ${isChecked}> ${sel}`;
-                  radioContainer.appendChild(label);
-                });
-              }
+        .then(result => {
+          if (result.error || result.ok === false) {
+            loading.textContent = getApiErrorMessage(result, "イベント情報を読み込めませんでした。");
+            return;
+          }
 
-              // ★追加：過去の備考(res.previousMemo)があればテキストエリアに入れる
-              if (res.previousMemo) {
-                document.getElementById('memo-input').value = res.previousMemo;
-              }
+          document.getElementById("q-title").textContent = result.event_name;
+          document.getElementById("event-datetime").textContent = result.event_datetime;
+          document.getElementById("event-location").textContent = result.event_location;
+          document.getElementById("q-text").textContent = result.description;
+          if (result.response_deadline) {
+            document.getElementById("event-deadline").textContent = result.response_deadline;
+            document.getElementById("deadline-row").style.display = "grid";
+          }
 
-              document.getElementById('loading').style.display = 'none';
-              document.getElementById('form-container').style.display = 'block';
-        })
-        .catch(error => {
-        console.error("API Fetch error:", error);
-        document.getElementById('loading').textContent = "通信エラーが発生しました。";
+          const radioContainer = document.getElementById("radio-buttons");
+          radioContainer.replaceChildren();
+          answerOptions.forEach(option => {
+            const label = document.createElement("label");
+            label.className = "radio-label";
+            const radio = document.createElement("input");
+            radio.type = "radio";
+            radio.name = "attendance_answer";
+            radio.value = option;
+            radio.checked = option === result.previousAnswer;
+            const text = document.createTextNode(option);
+            label.append(radio, text);
+            radioContainer.appendChild(label);
+          });
+
+          document.getElementById("memo-input").value = result.previousMemo || "";
+          loading.style.display = "none";
+          document.getElementById("form-container").style.display = "block";
         });
     }
 
-
-    // 3. 回答をGASへ送信 (POSTリクエスト)
     function submitForm() {
-      const radios = document.getElementsByName('q1_answer');
-      let selectedValue = "";
-      for (let i = 0; i < radios.length; i++) {
-        if (radios[i].checked) {
-          selectedValue = radios[i].value;
-          break;
-        }
-      }
-
-      if (!selectedValue) {
+      const selected = document.querySelector('input[name="attendance_answer"]:checked');
+      if (!selected) {
         alert("回答を選択してください。");
         return;
       }
 
-      // ★追加：備考欄の値を取得
-      const memoValue = document.getElementById('memo-input').value;
+      const submitButton = document.getElementById("submit-btn");
+      submitButton.disabled = true;
+      submitButton.textContent = "送信中...";
 
-      const submitBtn = document.getElementById('submit-btn');
-      submitBtn.disabled = true;
-      submitBtn.textContent = "送信中...";
-
-      // 送信するデータ
-      const answerData = {
-        lineId: userProfile.userId,
-        qid: QID, 
-        answer: selectedValue,
-        memo: memoValue // ★追加：GASに備考を送る
-      };
-
-      // CORS（クロスドメイン通信）対策として、text/plainで送信
       fetch(GAS_API_URL, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'text/plain', 
-        },
-        body: JSON.stringify(answerData)
+        method: "POST",
+        headers: { "Content-Type": "text/plain" },
+        body: JSON.stringify({
+          action: "attendance_answer",
+          lineId: userProfile.userId,
+          qid: eventId,
+          answer: selected.value,
+          memo: document.getElementById("memo-input").value,
+          liff_token: liff.getAccessToken() || ""
+        })
       })
-      .then(response => response.json())
-      .then(result => {
-        if (result.success) {
-          alert("回答を送信しました！");
-          liff.closeWindow(); // LINEのトーク画面に戻る
-        } else {
-          alert("保存に失敗しました。");
-          submitBtn.disabled = false;
-          submitBtn.textContent = "回答を送信する";
-        }
-      })
-      .catch(error => {
-        console.error("Error:", error);
-        alert("通信エラーが発生しました。電波の良いところで再度お試しください。");
-        submitBtn.disabled = false;
-        submitBtn.textContent = "回答を送信する";
-      });
+        .then(response => response.json())
+        .then(result => {
+          if (!result.success) {
+            throw new Error(getApiErrorMessage(result, "回答を保存できませんでした。"));
+          }
+          alert("回答を送信しました。");
+          liff.closeWindow();
+        })
+        .catch(error => {
+          console.error("Attendance submit failed:", error);
+          alert(error.message || "通信エラーが発生しました。電波の良いところで再度お試しください。");
+          submitButton.disabled = false;
+          submitButton.textContent = "回答を送信する";
+        });
+    }
+
+    function getApiErrorMessage(result, fallback) {
+      if (result && typeof result.message === "string" && result.message) {
+        return result.message;
+      }
+      if (result && result.error && typeof result.error.message === "string") {
+        return result.error.message;
+      }
+      return fallback;
     }
   </script>
 </body>
