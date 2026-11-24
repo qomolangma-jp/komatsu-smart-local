@@ -87,11 +87,11 @@
                 <!-- センターナビ -->
                 <nav id="desktopNav" class="hidden lg:flex space-x-8">
                     <a href="#home" class="text-gray-600 hover:text-brand-blue font-bold text-sm border-b-2 border-brand-blue pb-1">ホーム</a>
-                    <a href="#project" class="text-gray-600 hover:text-brand-blue font-bold text-sm pb-1">プロジェクトについて</a>
+                    <a href="#project" class="text-gray-600 hover:text-brand-blue font-bold text-sm pb-1">役員さんのお悩み</a>
                     <a href="#features" class="text-gray-600 hover:text-brand-blue font-bold text-sm pb-1">機能一覧</a>
+                    <a href="#faq" class="text-gray-600 hover:text-brand-blue font-bold text-sm pb-1">よくある質問(Q&A)</a>
                     <a href="#architecture" class="text-gray-600 hover:text-brand-blue font-bold text-sm pb-1">技術構成</a>
                     <a href="#opensource" class="text-gray-600 hover:text-brand-blue font-bold text-sm pb-1">オープンソース</a>
-                    <a href="https://forms.gle/WRH1pV5mXXFDpR7y8" target="_blank" rel="noopener noreferrer" class="text-gray-600 hover:text-brand-blue font-bold text-sm pb-1">お問い合わせ</a>
                 </nav>
 
                 <!-- 右側ボタン -->
@@ -99,7 +99,7 @@
                     <a href="https://github.com/qomolangma-jp/komatsu-smart-local" target="_blank" rel="noopener noreferrer" class="text-gray-700 hover:text-black font-bold flex items-center gap-2 text-sm">
                         <i class="fa-brands fa-github text-lg"></i> GitHub
                     </a>
-                    <a href="https://line.me/R/ti/p/@188fcxat?oat_content=url&amp;ts=09080056" target="_blank" rel="noopener noreferrer" class="bg-brand-line hover:bg-green-600 text-white px-5 py-2.5 rounded-full font-bold text-sm flex items-center gap-2 transition-colors">
+                    <a href="https://line.me/R/ti/p/@188fcxat?oat_content=url&amp;ts=09080056" target="_blank" rel="noopener noreferrer" class="bg-brand-line hover:bg-green-600 text-white px-5 py-2.5 rounded-full font-bold text-sm flex items-center gap-2 transition-colors shadow-sm">
                         <i class="fa-brands fa-line text-lg"></i> LINEで相談
                     </a>
                 </div>
@@ -111,23 +111,29 @@
                     </button>
                 </div>
             </div>
-            <nav id="mobileNav" class="hidden lg:hidden border-t border-gray-200 py-3">
+            <nav id="mobileNav" class="hidden lg:hidden border-t border-gray-200 py-3 bg-white">
                 <div class="flex flex-col gap-3 text-sm font-bold text-gray-700">
                     <a href="#home">ホーム</a>
-                    <a href="#project">プロジェクトについて</a>
+                    <a href="#project">役員さんのお悩み</a>
                     <a href="#features">機能一覧</a>
+                    <a href="#faq">よくある質問(Q&A)</a>
                     <a href="#architecture">技術構成</a>
                     <a href="#opensource">オープンソース</a>
-                    <a href="https://forms.gle/WRH1pV5mXXFDpR7y8" target="_blank" rel="noopener noreferrer">お問い合わせ</a>
+                    <a href="https://line.me/R/ti/p/@188fcxat?oat_content=url&amp;ts=09080056" class="text-brand-line">LINEで相談する</a>
                 </div>
             </nav>
         </div>
     </header>
 
     <main class="pt-20">
+        <!-- 01 ヒーローセクション -->
         <section id="home" class="hero-bg relative pt-16 pb-24 overflow-hidden">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
                 <div class="w-full lg:w-3/5">
+                    <div class="inline-flex items-center gap-2 bg-blue-50 border border-brand-blue/30 text-brand-blue px-3.5 py-1 rounded-full text-xs font-bold mb-4 shadow-sm">
+                        <span>町内会長様・役員様・班長さんへ</span>
+                    </div>
+
                     <h2 class="text-4xl md:text-5xl lg:text-6xl font-black leading-tight text-brand-blue tracking-tight mb-4">
                         紙の回覧板から、<br>
                         <span class="text-brand-green">持続可能な地域の未来へ。</span>
@@ -139,8 +145,8 @@
                     </p>
 
                     <p class="text-gray-700 text-base md:text-lg mb-8 leading-relaxed max-w-2xl font-medium">
-                        小松 Smart自治PJ (KSL) は、班長さんの紙配布負担を解消するために<br class="hidden md:block">生まれた地域密着型のオープンソースプロジェクトです。<br>
-                        <span class="font-bold text-brand-blue">GitHub Pages・LINE・Google Workspace</span>を活用し、最大500世帯規模の<br class="hidden md:block">自治会業務を完全無料でデジタル化します。
+                        小松 Smart自治PJ (KSL) は、班長さんの紙配布負担を解消するために生まれた地域密着型のオープンソースプロジェクトです。<br>
+                        <span class="font-bold text-brand-blue">GitHub Pages・LINE・Google Workspace</span>を活用し、最大500世帯規模の自治会業務を完全無料でデジタル化します。
                     </p>
 
                     <div class="flex flex-wrap gap-3 mb-10">
@@ -161,17 +167,18 @@
                     </div>
 
                     <div class="flex flex-col sm:flex-row gap-4">
-                        <a href="https://github.com/qomolangma-jp/komatsu-smart-local" target="_blank" rel="noopener noreferrer" class="bg-brand-blue hover:bg-blue-800 text-white px-8 py-4 rounded-full font-bold text-[17px] flex justify-center items-center gap-3 transition-colors shadow-lg">
-                            <i class="fa-brands fa-github text-2xl"></i> GitHubでコード・導入ガイドを見る <i class="fa-solid fa-arrow-right ml-1 text-sm"></i>
-                        </a>
                         <a href="https://line.me/R/ti/p/@188fcxat?oat_content=url&amp;ts=09080056" target="_blank" rel="noopener noreferrer" class="bg-brand-line hover:bg-green-600 text-white px-8 py-4 rounded-full font-bold text-[17px] flex justify-center items-center gap-3 transition-colors shadow-lg">
                             <i class="fa-brands fa-line text-2xl"></i> LINEで導入・活用について相談する <i class="fa-solid fa-arrow-right ml-1 text-sm"></i>
+                        </a>
+                        <a href="https://github.com/qomolangma-jp/komatsu-smart-local" target="_blank" rel="noopener noreferrer" class="bg-brand-blue hover:bg-blue-800 text-white px-8 py-4 rounded-full font-bold text-[17px] flex justify-center items-center gap-3 transition-colors shadow-lg">
+                            <i class="fa-brands fa-github text-2xl"></i> GitHubでコード・導入ガイドを見る <i class="fa-solid fa-arrow-right ml-1 text-sm"></i>
                         </a>
                     </div>
                 </div>
             </div>
         </section>
 
+        <!-- 02 開発の背景とストーリー -->
         <section id="project" class="bg-gray-50 py-20 relative overflow-hidden">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="flex flex-col lg:flex-row gap-12 items-start">
@@ -194,18 +201,37 @@
                             <h3 class="text-[#0097a7] font-bold text-lg">開発の背景とストーリー</h3>
                         </div>
                         
-                        <h2 class="text-3xl md:text-4xl font-bold text-brand-blue mb-8 leading-tight">
+                        <h2 class="text-3xl md:text-4xl font-bold text-brand-blue mb-6 leading-tight">
                             何十年も変わらなかった<br>
-                            「班長さんの負担」に、本気で向き合う。
+                            「班長さん・役員さんの負担」に、本気で向き合う。
                         </h2>
+
+                        <!-- リアルなお困りごとカード一覧 -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mb-6">
+                            <div class="bg-white p-3.5 rounded-lg border-l-4 border-[#0097a7] shadow-sm flex items-start gap-3">
+                                <span class="text-xl">🚶</span>
+                                <p class="text-sm font-bold text-gray-800">一軒一軒歩いて回るのが大変。外出中のお宅が多くて急ぎの回覧が途中で止まる…</p>
+                            </div>
+                            <div class="bg-white p-3.5 rounded-lg border-l-4 border-[#0097a7] shadow-sm flex items-start gap-3">
+                                <span class="text-xl">👥</span>
+                                <p class="text-sm font-bold text-gray-800">隣に誰が住んでいるのか分からず、住民名簿の確認や更新作業に苦労している…</p>
+                            </div>
+                            <div class="bg-white p-3.5 rounded-lg border-l-4 border-[#0097a7] shadow-sm flex items-start gap-3">
+                                <span class="text-xl">📊</span>
+                                <p class="text-sm font-bold text-gray-800">行事の出欠票を手作業で1枚ずつ数え、夜遅くまで集計するのが本当に負担…</p>
+                            </div>
+                            <div class="bg-white p-3.5 rounded-lg border-l-4 border-[#0097a7] shadow-sm flex items-start gap-3">
+                                <span class="text-xl">💦</span>
+                                <p class="text-sm font-bold text-gray-800">「役員や班長は大変だからやりたくない」と、次の引き受け手が全く見つからない…</p>
+                            </div>
+                        </div>
 
                         <p class="text-brand-blue text-[15px] md:text-[17px] leading-[2.2] font-medium space-y-4">
                             <span class="block">毎月、重い紙の配布物や回覧板を持って一軒一軒配って回るーー。<br>長年続いてきたこの作業は、現代の自治会役員にとってあまりにも大きな負担です。</span>
-                            <span class="block">役員のなり手不足や地域の希薄化が進む中、私たちは「時代に即さない手法を改め、<br>現場の負担を本気でゼロにする」ことを目的に本プロジェクトを始動しました。</span>
-                            <span class="block">単にアプリを入れるのではなく、住民一人ひとりが「デジタル配信を希望し、紙の配布を<br><span class="font-bold border-b-2 border-brand-blue pb-0.5">不要とする意思表示</span>」を行える仕組みを作ることで、真のペーパーレスと持続可能な町内会運営を実現します。</span>
+                            <span class="block">役員のなり手不足や地域の希薄化が進む中、私たちは「時代に即さない手法を改め、現場の負担を本気でゼロにする」ことを目的に本プロジェクトを始動しました。</span>
+                            <span class="block">単にアプリを入れるのではなく、住民一人ひとりが「デジタル配信を希望し、紙の配布を<span class="font-bold border-b-2 border-brand-blue pb-0.5">不要とする意思表示</span>」を行える仕組みを作ることで、真のペーパーレスと持続可能な町内会運営を実現します。</span>
                         </p>
 
-                        <!-- ★統合箇所1：02セクションの署名★ -->
                         <div class="mt-8 text-right">
                             <p class="inline-block border-b-2 border-[#0097a7] pb-1 text-brand-blue font-bold text-base">
                                 開発・提案者：吉柴 文悟
@@ -216,10 +242,185 @@
             </div>
         </section>
 
+        <!-- 03 機能一覧 -->
+        <section id="features" class="bg-[#f4fcf9] py-20 border-t border-b border-gray-100">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex items-center gap-4 mb-12">
+                    <div class="w-12 h-12 bg-[#009988] text-white rounded-full flex items-center justify-center font-bold text-2xl shadow-md shrink-0">03</div>
+                    <h2 class="text-2xl md:text-3xl font-bold text-[#009988] leading-tight">
+                        スマホ1ページで完結。住民も役員も迷わないスマート機能。
+                    </h2>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 items-stretch h-full">
+                    <div class="bg-white rounded-xl p-5 shadow-[0_2px_8px_rgba(0,0,0,0.03)] border border-[#0078D4]/20 flex flex-col h-full hover:shadow-md transition-shadow">
+                        <div class="flex items-center gap-3 mb-4">
+                            <div class="w-14 h-14 bg-[#0078D4] text-white rounded-full flex items-center justify-center text-[26px] shrink-0">
+                                <i class="fa-solid fa-file-lines"></i>
+                            </div>
+                            <h4 class="font-bold text-[#0078D4] text-[16px] leading-tight flex-1">
+                                電子回覧板＆デジタル配布物
+                            </h4>
+                        </div>
+                        <div class="flex-grow">
+                            <p class="text-gray-700 text-[13px] leading-[1.8] font-medium">
+                                LINEから今月の配布物に直接アクセス。<br>回覧板と広報紙等のPDFをまとめて閲覧。<br>閲覧日時ログも自動保存。
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-xl p-5 shadow-[0_2px_8px_rgba(0,0,0,0.03)] border border-[#F58220]/20 flex flex-col h-full hover:shadow-md transition-shadow">
+                        <div class="flex items-center gap-3 mb-4">
+                            <div class="w-14 h-14 bg-[#F58220] text-white rounded-full flex items-center justify-center text-[26px] shrink-0">
+                                <i class="fa-solid fa-house"></i>
+                            </div>
+                            <h4 class="font-bold text-[#F58220] text-[16px] leading-tight flex-1">
+                                公民館・施設予約<br>
+                                <span class="text-[13px] font-normal leading-tight">(2タッチ申請)</span>
+                            </h4>
+                        </div>
+                        <div class="flex-grow">
+                            <p class="text-gray-700 text-[13px] leading-[1.8] font-medium">
+                                ログイン認証済みだから名前入力不要。<br>日付と部屋を選ぶだけの「2タッチ」で<br>申請完了。管理者はLINEで承認・却下を<br>ワンタップ処理。
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-xl p-5 shadow-[0_2px_8px_rgba(0,0,0,0.03)] border border-[#E6005C]/20 flex flex-col h-full hover:shadow-md transition-shadow">
+                        <div class="flex items-center gap-3 mb-4">
+                            <div class="w-14 h-14 bg-[#E6005C] text-white rounded-full flex items-center justify-center text-[26px] shrink-0">
+                                <i class="fa-regular fa-calendar-check"></i>
+                            </div>
+                            <h4 class="font-bold text-[#E6005C] text-[16px] leading-tight flex-1">
+                                イベント出欠＆行事回答
+                            </h4>
+                        </div>
+                        <div class="flex-grow">
+                            <p class="text-gray-700 text-[13px] leading-[1.8] font-medium">
+                                質問にスマホからサクッと回答。<br>回答状況はスプレッドシートへ自動反映。<br>手作業の集計苦労を解消。
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-xl p-5 shadow-[0_2px_8px_rgba(0,0,0,0.03)] border border-[#009988]/20 flex flex-col h-full hover:shadow-md transition-shadow">
+                        <div class="flex items-center gap-3 mb-4">
+                            <div class="w-14 h-14 bg-[#009988] text-white rounded-full flex items-center justify-center text-[26px] shrink-0">
+                                <i class="fa-solid fa-helmet-safety"></i>
+                            </div>
+                            <h4 class="font-bold text-[#009988] text-[16px] leading-tight flex-1">
+                                災害時安否確認
+                            </h4>
+                        </div>
+                        <div class="flex-grow">
+                            <p class="text-gray-700 text-[13px] leading-[1.8] font-medium">
+                                万一の災害時には「無事」「連絡が必要」<br>を一斉確認、有事の地域防災インフラ<br>として機能。
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 04 よくある質問（Q&A） -->
+        <section id="faq" class="bg-white py-20 border-b border-gray-100">
+            <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex items-center gap-4 mb-12">
+                    <div class="w-12 h-12 bg-cyan-500 text-white rounded-full flex items-center justify-center font-bold text-2xl shadow-md shrink-0">04</div>
+                    <div>
+                        <h2 class="text-2xl md:text-3xl font-bold text-brand-blue leading-tight">
+                            よくあるご質問（Q&A）
+                        </h2>
+                        <p class="text-gray-600 text-sm md:text-base mt-1">導入前によく町内会長様や役員様からいただくご質問にお答えします。</p>
+                    </div>
+                </div>
+
+                <div class="space-y-4">
+                    <!-- Q1: LINEグループとの違い -->
+                    <div class="bg-gray-50 border border-gray-200 rounded-xl p-6 shadow-sm">
+                        <div class="flex items-start gap-3">
+                            <span class="bg-brand-blue text-white text-xs font-bold px-2.5 py-1 rounded">Q</span>
+                            <h4 class="font-bold text-brand-blue text-lg">普通の「LINEグループ」とは何が違うのですか？</h4>
+                        </div>
+                        <p class="text-gray-700 text-sm md:text-base leading-relaxed mt-3 pl-8">
+                            通常のLINEグループでは<strong>「他の人に自分の名前や連絡先が見えてしまう」「夜中に通知が鳴って迷惑になる」</strong>といった心配があります。<br>
+                            本システムは役員と住民が1対1の形でつながるため、個人のプライバシーがしっかり守られます。
+                        </p>
+                    </div>
+
+                    <!-- Q2: なぜメールではなくLINE？ -->
+                    <div class="bg-gray-50 border border-gray-200 rounded-xl p-6 shadow-sm">
+                        <div class="flex items-start gap-3">
+                            <span class="bg-brand-blue text-white text-xs font-bold px-2.5 py-1 rounded">Q</span>
+                            <h4 class="font-bold text-brand-blue text-lg">なぜメールではなくLINEを使うのですか？</h4>
+                        </div>
+                        <p class="text-gray-700 text-sm md:text-base leading-relaxed mt-3 pl-8">
+                            メールアドレスは入力の手間が大きく、迷惑メール扱いになって届かないトラブルが頻発するためです。シニア層も含めて最も普及しているLINEを活用することで、誰でも迷わず回覧板を見てもらえます。
+                        </p>
+                    </div>
+
+                    <!-- Q3: サービスの存続性 -->
+                    <div class="bg-gray-50 border border-gray-200 rounded-xl p-6 shadow-sm">
+                        <div class="flex items-start gap-3">
+                            <span class="bg-brand-blue text-white text-xs font-bold px-2.5 py-1 rounded">Q</span>
+                            <h4 class="font-bold text-brand-blue text-lg">この仕組みが急になくなって使えなくなる心配はありませんか？</h4>
+                        </div>
+                        <p class="text-gray-700 text-sm md:text-base leading-relaxed mt-3 pl-8">
+                            特定のベンチャー企業1社の専用ソフトではなく、社会インフラとして広く普及しているLINEとGoogleの標準的な仕組みを使用しているため、長期的に安定して利用できます。
+                        </p>
+                    </div>
+
+                    <!-- Q4: 費用について -->
+                    <div class="bg-gray-50 border border-gray-200 rounded-xl p-6 shadow-sm">
+                        <div class="flex items-start gap-3">
+                            <span class="bg-brand-blue text-white text-xs font-bold px-2.5 py-1 rounded">Q</span>
+                            <h4 class="font-bold text-brand-blue text-lg">本当にずっと無料ですか？後から費用を請求されませんか？</h4>
+                        </div>
+                        <p class="text-gray-700 text-sm md:text-base leading-relaxed mt-3 pl-8">
+                            はい、サーバー費用や月額利用料は完全0円です。LINEやGoogleが提供している無料枠の範囲内で運用できるよう設計しているため、継続的な費用負担はありません。
+                        </p>
+                    </div>
+
+                    <!-- Q5: 会長が高齢の場合の導入方法 -->
+                    <div class="bg-gray-50 border border-gray-200 rounded-xl p-6 shadow-sm">
+                        <div class="flex items-start gap-3">
+                            <span class="bg-brand-blue text-white text-xs font-bold px-2.5 py-1 rounded">Q</span>
+                            <h4 class="font-bold text-brand-blue text-lg">町内会長が高齢でパソコンが苦手なのですが、導入できますか？</h4>
+                        </div>
+                        <p class="text-gray-700 text-sm md:text-base leading-relaxed mt-3 pl-8">
+                            会長様ご自身がパソコンを操作する必要はありません。町内の若手の方や役員サポートの方に1名協力いただき、その方と連携してセットアップを行います。会長様は導入のご判断をいただくだけで大丈夫です。
+                        </p>
+                    </div>
+
+                    <!-- Q6: 市役所・連合会への申請 -->
+                    <div class="bg-gray-50 border border-gray-200 rounded-xl p-6 shadow-sm">
+                        <div class="flex items-start gap-3">
+                            <span class="bg-brand-blue text-white text-xs font-bold px-2.5 py-1 rounded">Q</span>
+                            <h4 class="font-bold text-brand-blue text-lg">市役所や町会連合会へ許可や書類申請を出す必要はありますか？</h4>
+                        </div>
+                        <p class="text-gray-700 text-sm md:text-base leading-relaxed mt-3 pl-8">
+                            市や連合会への事前申請や届出は一切不要です。各町内会・自治会の自主的な取り組みとして、ご判断いただいたその日からすぐにお試し・導入いただけます。
+                        </p>
+                    </div>
+
+                    <!-- Q7: 説明会の開催 -->
+                    <div class="bg-gray-50 border border-gray-200 rounded-xl p-6 shadow-sm">
+                        <div class="flex items-start gap-3">
+                            <span class="bg-brand-blue text-white text-xs font-bold px-2.5 py-1 rounded">Q</span>
+                            <h4 class="font-bold text-brand-blue text-lg">住民や役員向けの説明会を開いてもらうことはできますか？</h4>
+                        </div>
+                        <p class="text-gray-700 text-sm md:text-base leading-relaxed mt-3 pl-8">
+                            はい、小松市近郊であれば数名お集まりいただける機会に合わせて、実際のスマホ画面をお見せしながらわかりやすく説明にお伺いできます。お気軽にLINEよりご相談ください。
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 05 技術構成 -->
         <section id="architecture" class="bg-white py-20">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="flex items-center gap-4 mb-12">
-                    <div class="w-12 h-12 bg-cyan-500 text-white rounded-full flex items-center justify-center font-bold text-2xl shadow-md shrink-0">03</div>
+                    <div class="w-12 h-12 bg-cyan-500 text-white rounded-full flex items-center justify-center font-bold text-2xl shadow-md shrink-0">05</div>
                     <h2 class="text-2xl md:text-3xl font-bold text-brand-blue leading-tight">
                         誰もが真似できる。月額コスト<span class="text-brand-cyan text-4xl">０</span>円を可能にするオープンアーキテクチャ。
                     </h2>
@@ -324,88 +525,11 @@
             </div>
         </section>
 
-        <section id="features" class="bg-[#f4fcf9] py-20 border-t border-b border-gray-100">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div class="flex items-center gap-4 mb-12">
-                    <div class="w-12 h-12 bg-[#009988] text-white rounded-full flex items-center justify-center font-bold text-2xl shadow-md shrink-0">04</div>
-                    <h2 class="text-2xl md:text-3xl font-bold text-[#009988] leading-tight">
-                        スマホ1ページで完結。住民も役員も迷わないスマート機能。
-                    </h2>
-                </div>
-
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 items-stretch h-full">
-                    <div class="bg-white rounded-xl p-5 shadow-[0_2px_8px_rgba(0,0,0,0.03)] border border-[#0078D4]/20 flex flex-col h-full hover:shadow-md transition-shadow">
-                        <div class="flex items-center gap-3 mb-4">
-                            <div class="w-14 h-14 bg-[#0078D4] text-white rounded-full flex items-center justify-center text-[26px] shrink-0">
-                                <i class="fa-solid fa-file-lines"></i>
-                            </div>
-                            <h4 class="font-bold text-[#0078D4] text-[16px] leading-tight flex-1">
-                                電子回覧板＆デジタル配布物
-                            </h4>
-                        </div>
-                        <div class="flex-grow">
-                            <p class="text-gray-700 text-[13px] leading-[1.8] font-medium">
-                                LINEから今月の配布物に直接アクセス。<br>回覧板と広報紙等のPDFをまとめて閲覧。<br>閲覧日時ログも自動保存。
-                            </p>
-                        </div>
-                    </div>
-
-                    <div class="bg-white rounded-xl p-5 shadow-[0_2px_8px_rgba(0,0,0,0.03)] border border-[#F58220]/20 flex flex-col h-full hover:shadow-md transition-shadow">
-                        <div class="flex items-center gap-3 mb-4">
-                            <div class="w-14 h-14 bg-[#F58220] text-white rounded-full flex items-center justify-center text-[26px] shrink-0">
-                                <i class="fa-solid fa-house"></i>
-                            </div>
-                            <h4 class="font-bold text-[#F58220] text-[16px] leading-tight flex-1">
-                                公民館・施設予約<br>
-                                <span class="text-[13px] font-normal leading-tight">(2タッチ申請)</span>
-                            </h4>
-                        </div>
-                        <div class="flex-grow">
-                            <p class="text-gray-700 text-[13px] leading-[1.8] font-medium">
-                                ログイン認証済みだから名前入力不要。<br>日付と部屋を選ぶだけの「2タッチ」で<br>申請完了。管理者はLINEで承認・却下を<br>ワンタップ処理。
-                            </p>
-                        </div>
-                    </div>
-
-                    <div class="bg-white rounded-xl p-5 shadow-[0_2px_8px_rgba(0,0,0,0.03)] border border-[#E6005C]/20 flex flex-col h-full hover:shadow-md transition-shadow">
-                        <div class="flex items-center gap-3 mb-4">
-                            <div class="w-14 h-14 bg-[#E6005C] text-white rounded-full flex items-center justify-center text-[26px] shrink-0">
-                                <i class="fa-regular fa-calendar-check"></i>
-                            </div>
-                            <h4 class="font-bold text-[#E6005C] text-[16px] leading-tight flex-1">
-                                イベント出欠＆行事回答
-                            </h4>
-                        </div>
-                        <div class="flex-grow">
-                            <p class="text-gray-700 text-[13px] leading-[1.8] font-medium">
-                                質問にスマホからサクッと回答。<br>回答状況はスプレッドシートへ自動反映。<br>手作業の集計苦労を解消。
-                            </p>
-                        </div>
-                    </div>
-
-                    <div class="bg-white rounded-xl p-5 shadow-[0_2px_8px_rgba(0,0,0,0.03)] border border-[#009988]/20 flex flex-col h-full hover:shadow-md transition-shadow">
-                        <div class="flex items-center gap-3 mb-4">
-                            <div class="w-14 h-14 bg-[#009988] text-white rounded-full flex items-center justify-center text-[26px] shrink-0">
-                                <i class="fa-solid fa-helmet-safety"></i>
-                            </div>
-                            <h4 class="font-bold text-[#009988] text-[16px] leading-tight flex-1">
-                                災害時安否確認
-                            </h4>
-                        </div>
-                        <div class="flex-grow">
-                            <p class="text-gray-700 text-[13px] leading-[1.8] font-medium">
-                                万一の災害時には「無事」「連絡が必要」<br>を一斉確認、有事の地域防災インフラ<br>として機能。
-                            </p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
+        <!-- 06 オープンソース -->
         <section id="opensource" class="bg-white py-20">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="flex items-center gap-4 mb-12">
-                    <div class="w-12 h-12 bg-cyan-500 text-white rounded-full flex items-center justify-center font-bold text-2xl shadow-md shrink-0">05</div>
+                    <div class="w-12 h-12 bg-cyan-500 text-white rounded-full flex items-center justify-center font-bold text-2xl shadow-md shrink-0">06</div>
                     <h2 class="text-2xl md:text-3xl font-bold text-brand-blue leading-tight">
                         1つの地域から、全国の自治会へ。オープンソースとして知見を<span class="text-brand-cyan">共有</span>。
                     </h2>
@@ -457,13 +581,12 @@
             </div>
         </section>
 
-        <!-- ★統合箇所2：開発者プロフィールカード（名刺エリア）★ -->
+        <!-- 開発者プロフィールカード（名刺エリア） -->
         <section class="py-12 bg-gray-50 border-t border-gray-200">
             <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="bg-white rounded-2xl p-6 md:p-8 shadow-sm flex flex-col md:flex-row items-center md:items-start gap-6 border border-gray-100">
-                    <div class="w-24 h-24 bg-blue-50 rounded-full flex-shrink-0 border-2 border-white shadow-md flex items-center justify-center text-brand-blue text-3xl font-bold">
-                        吉柴
-                    </div>
+                    <!-- 顔写真画像 images/face.jpg の反映 -->
+                    <img src="./images/face.jpg" alt="吉柴 文悟" class="w-24 h-24 rounded-full object-cover flex-shrink-0 border-2 border-white shadow-md">
                     <div class="flex-1 text-center md:text-left">
                         <p class="text-[#0097a7] text-xs font-bold mb-1 tracking-wider">DEVELOPER / PROPOSER</p>
                         <h3 class="text-xl md:text-2xl font-bold text-brand-blue mb-3">吉柴 文悟 <span class="text-xs font-normal text-gray-500 ml-2">Bungo Yoshiba</span></h3>
@@ -479,10 +602,11 @@
             </div>
         </section>
 
+        <!-- 07 お問い合わせ・CTA -->
         <section id="contact" class="cta-bg py-20">
             <div class="cta-content max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="flex items-center gap-4 mb-10">
-                    <div class="w-12 h-12 bg-cyan-400 text-white rounded-full flex items-center justify-center font-bold text-2xl shadow-md shrink-0">06</div>
+                    <div class="w-12 h-12 bg-cyan-400 text-white rounded-full flex items-center justify-center font-bold text-2xl shadow-md shrink-0">07</div>
                     <h2 class="text-2xl md:text-3xl font-bold text-white leading-tight drop-shadow-md">
                         さあ、一緒に。持続可能な地域のために。
                     </h2>
@@ -495,7 +619,7 @@
                         </div>
                         <div>
                             <p class="text-sm font-bold text-gray-600 mb-1">自治会役員・住民の方向け</p>
-                            <h4 class="font-bold text-brand-green text-[15px]">公式LINEで導入・運用について相談する <i class="fa-solid fa-arrow-right text-sm ml-1"></i></h4>
+                            <h4 class="font-bold text-brand-green text-[15px]">まずはLINEで相談してみる <i class="fa-solid fa-arrow-right text-sm ml-1"></i></h4>
                         </div>
                     </a>
 
@@ -536,15 +660,14 @@
 
                 <nav class="flex flex-wrap justify-center md:justify-end gap-x-8 gap-y-4 text-sm text-gray-300 font-medium">
                     <a href="#home" class="hover:text-white transition-colors">ホーム</a>
-                    <a href="#project" class="hover:text-white transition-colors">プロジェクトについて</a>
+                    <a href="#project" class="hover:text-white transition-colors">役員さんのお悩み</a>
                     <a href="#features" class="hover:text-white transition-colors">機能一覧</a>
+                    <a href="#faq" class="hover:text-white transition-colors">よくある質問(Q&A)</a>
                     <a href="#architecture" class="hover:text-white transition-colors">技術構成</a>
                     <a href="#opensource" class="hover:text-white transition-colors">オープンソース</a>
-                    <a href="https://forms.gle/WRH1pV5mXXFDpR7y8" target="_blank" rel="noopener noreferrer" class="hover:text-white transition-colors">お問い合わせ</a>
                 </nav>
             </div>
 
-            <!-- ★統合箇所3：フッターのクレジット★ -->
             <div class="border-t border-gray-700 pt-8 w-full block mt-8">
                 <div class="text-[13px] text-gray-400 text-center w-full">
                     &copy; 2026 小松 Smart自治PJ (Komatsu Smart Local Project) / Developed for Sustainable Local Community by Bungo Yoshiba
